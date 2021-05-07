@@ -38,12 +38,12 @@ knitr::opts_chunk$set(echo = TRUE)
 source("theme_Publication.R")
 ```
 
-# Tax-4 and HisCl1 Experiments
+# *Ss-Tax-4* and *strHisCl1* Experiments
 These data show the results of the following experimental questions: 
 
 * Role of *Ss-tax-4* in negative thermotaxis behaviors by *S. stercoralis* iL3s
-* Effect of inactivating *Ss*-AFD on positive thermotaxis
-* Effect of inactivating *Ss*-AFD on negative thermotaxis
+* Effect of chemogenetic inactivation of *Ss*-AFD on positive thermotaxis
+* Effect of chemogenetic inactivation of *Ss*-AFD on negative thermotaxis
 
 ## Data Inputs
 These data were calculated by the TT_WormTracker Matlab code and are imported
@@ -100,7 +100,8 @@ plot_tracking <-  function(dat, y, ylim, xlabel, ylabel, title = NULL, groupcolo
 
 ```
 
-## AFDp::HisCl1
+## *Ss*-AFD chemogenetic silencing
+Worm: *Sr-gcy-23.2p::strHisCl1* iL3s, with and without treatment with exogenous histamine
 
 ### Positive Thermotaxis
 ```{r}
@@ -206,7 +207,8 @@ ggarrange(
 
 ```
 
-## *Ss-tax-4* CRISPR
+## *Ss-tax-4* CRISPR/Cas9 KO
+CRISPR/Cas9-mediated targeted mutagensis of the *Ss-tax-4* gene. Control worms were not injected with Cas9 plasmid vectors.
 
 ### Negative Thermotaxis
 ```{r}
@@ -336,7 +338,6 @@ dat_AFD_across <- dplyr::filter(dat_AFD, Tc == 23)  %>%
 Responses of *Ss*-AFD and *Ce*-AFD to thermal stimuli based on the temperatures experienced by *S. stercoralis* iL3s performing postitive thermotaxis in a 20-34C temperature gradient.  In these cases, ramp speeds are generally 0.025C/s.  
 
 ### Plot Templates  
-
 ```{r AFD_Plot_Templates}
 
 plot_AFD <- function(dat, y, ylim, xlabel, ylabel, stat.test, stat.y.position, title = NULL){
@@ -404,39 +405,6 @@ plot_AFD_Speciesfacet <- function(dat, y, ylim, xlabel, ylabel, title = NULL){
     theme_Publication() +
     theme(aspect.ratio = 2/1) 
 }
-
-plot_AFD_Bins <- function(dat, y, ylim, xlabel, ylabel, title = NULL){
-  ggplot(data = dat, mapping = aes(x = TempBin, y = y)) + 
-    stat_boxplot(geom = "errorbar", 
-                 width = 0.25,
-                 size = .5) +
-    geom_boxplot(width = 0.5,
-                 outlier.shape = NA,
-                 fatten = 1,
-                 key_glyph = "rect",
-                 alpha = 0.3,
-                 show.legend = F,
-                 aes(fill = Species)) +
-    geom_jitter(size = 1,
-                stroke = .75,
-                width = .2,
-                aes(color = Species, shape = Stimulus)) +
-    # stat_pvalue_manual(stat.test, 
-    #                    y.position = stat.y.position, 
-    #                    label = 'p.signif') + 
-    facet_grid(Species ~ Tc)+
-    scale_y_continuous(limits = ylim, 
-                       expand = expansion(add = 0)) +
-    scale_color_carto_d(palette = "Vivid") +
-    scale_fill_carto_d(palette = "Vivid") +
-    scale_shape_manual(values = c(21:23))  +
-    xlab(xlabel) +
-    ylab(ylabel) +
-    ggtitle(title) +
-    theme_Publication() +
-    theme(aspect.ratio = 2/1) 
-}
-
 ```
 
 ### Temperature Threshold  
@@ -491,20 +459,6 @@ p.thresh.allTc <- plot_AFD_Speciesfacet(dat_AFD_allTc,
                                         title)
 
 print(p.thresh.allTc)
-# stat.thresh.15 <- compare_means(Temperature ~ Species, 
-#                            data = dat_AFD_15,
-#                            alternative = "two.sided")
-
-# p.thresh.15 <- plot_AFD(dat_AFD_15, 
-#          dat_AFD_15$Temperature, 
-#          ylim,
-#          xlabel, 
-#          ylabel,
-#          stat.thresh.15,
-#          38,
-#          title)
-# 
-# print(p.thresh.15)
 ```
 
 ### Pearson Correlation  
@@ -545,21 +499,6 @@ ylabel <- "Pearson's R"
 title <- "T vs Ca Correlation, Tc = 15C"
 ylim <- c(-1.5, 1.5)
 xlabel <- "Cultivation Temp"
-# stat.pearson.15 <- compare_means(AboveThPearsonR ~ Species, 
-#                            data = dat_AFD_15,
-#                            alternative = "two.sided")
-# 
-# p.pearson.15 <- plot_AFD(dat_AFD_15, 
-#          dat_AFD_15$AboveThPearsonR, 
-#          ylim,
-#          xlabel, 
-#          ylabel,
-#          stat.pearson.15,
-#          1.3,
-#          title)
-# 
-# print(p.pearson.15)
-
 
 p.pearson.allTc <- plot_AFD_Speciesfacet(dat_AFD_allTc, 
                                          dat_AFD_allTc$AboveThPearsonR, 
@@ -609,21 +548,6 @@ ylabel <- "Spearman's R"
 title <- "T vs Ca Correlation, Tc = 15C"
 ylim <- c(-1.5, 1.5)
 xlabel <- "Cultivation Temp"
-# stat.pearson.15 <- compare_means(AboveThPearsonR ~ Species, 
-#                            data = dat_AFD_15,
-#                            alternative = "two.sided")
-# 
-# p.pearson.15 <- plot_AFD(dat_AFD_15, 
-#          dat_AFD_15$AboveThPearsonR, 
-#          ylim,
-#          xlabel, 
-#          ylabel,
-#          stat.pearson.15,
-#          1.3,
-#          title)
-# 
-# print(p.pearson.15)
-
 
 p.spearman.allTc <- plot_AFD_Speciesfacet(dat_AFD_allTc, 
                                           dat_AFD_allTc$AtThSpearmanR, 
@@ -817,11 +741,6 @@ plot_AFD_type <- function(dat, y, ylim, xlabel, ylabel, title = NULL){
                 stroke = .75,
                 width = .2,
                 aes(color = Species, shape = Stimulus)) +
-    # stat_pvalue_manual(stat.test, 
-    #                    y.position = stat.y.position,
-    #                    tip.length = 0,
-    #                    bracket.shorten = 0.2,
-    #                    label = 'p.signif') + 
     facet_grid(. ~ Species)+
     scale_y_continuous(limits = ylim, 
                        expand = expansion(add = 0)) +
@@ -1022,33 +941,6 @@ p.pearson.NT <- plot_AFD(dat_AFD_NT,
 print(p.pearson.NT)
 ```
 
-### Responses at specific temperatures   
-These plots show the calcium response at specific temperature bins.  
-
-#### Response at 13C
-```{r}
-xlabel <- "Stimulus Type"
-ylabel <- "Response Amplitude (% dR/R)"
-title <- "Calcium Response at 13C"
-ylim <- c(-40,40)
-
-stat.NT.13.resp <- compare_means(ResponseSize_13C ~ Species, 
-                                 data = dat_AFD_NT,
-                                 alternative = "two.sided")
-
-p.NT.13.resp <- plot_AFD(dat_AFD_NT, 
-                         dat_AFD_NT$ResponseSize_13C, 
-                         ylim,
-                         xlabel, 
-                         ylabel,
-                         stat.NT.13.resp,
-                         38,
-                         title)
-
-print(p.NT.13.resp)
-
-```
-
 ### Group and Save AFD Plots
 ```{r}
 ggarrange(
@@ -1058,14 +950,13 @@ ggarrange(
   p.min.R4,
   p.max.R4,
   p.pearson.NT,
-  p.NT.13.resp,
   ncol = 2,
-  nrow = 4
+  nrow = 3
 ) %>%
   ggsave(filename ="AFD_Plots_R4+NT.pdf",
          device = cairo_pdf,
          width = 7,
-         height = 8.4,
+         height = 6.3,
          path = dirname(dat_AFD_file))
 ```
 
