@@ -60,15 +60,19 @@ if (is_empty(dat_inactivation_file)){
 }
 dat_inactivation <- read_excel(dat_inactivation_file, sheet = 1) %>%
   group_by(Experiment,ThermoMode, Phenotype) %>%
-  dplyr::mutate(Experiment = factor(Experiment, levels = c("HisCl", "CRISPR"))) %>%
+  dplyr::mutate(Experiment = factor(Experiment, levels = c("HisCl", "CRISPR", 
+                                                         "Unstimulated"))) %>%
   dplyr::mutate(ThermoMode = factor(ThermoMode, levels = c("PT", "NT"))) %>%
-  dplyr::mutate(Phenotype = factor(Phenotype, levels = c("BU", "Histamine", "NoCas9", "Ss-tax-4"))) 
+  dplyr::mutate(Phenotype = factor(Phenotype, levels = c("BU", "Histamine", 
+                                                         "NoCas9", "Ss-tax-4", 
+                                                         "Unstimulated"))) 
 
 ```
 
 ## Plot Templates
 ```{r}
-plot_tracking <-  function(dat, y, ylim, xlabel, ylabel, title = NULL, groupcolors,groupshapes){
+plot_tracking <-  function(dat, y, ylim, xlabel, ylabel, title = NULL, 
+                           groupcolors,groupshapes){
   ggplot(data = dat, mapping = aes(x = Phenotype, y = y)) + 
     stat_boxplot(geom = "errorbar", 
                  width = 0.25,
@@ -132,9 +136,24 @@ p.PT.HisCl.Speed<- dat_inactivation %>%
                                 "Histamine" = "#99772C"),
                 groupshapes = 21)
 
+p.PT.HisCl.Speed2<- dat_inactivation %>%
+  dplyr::filter(Experiment == "HisCl" | Experiment == "Unstimulated") %>%
+  dplyr::filter(ThermoMode == "PT") %>%
+  plot_tracking(dat = ., 
+                y = .$Speed, 
+                ylim = c(0,0.8),
+                xlabel = NULL,
+                title = "PT HisCl1: Speed",
+                ylabel = "Speed (mm/s)",
+                groupcolors = c("BU" = "#5F6369", 
+                                "Histamine" = "#99772C",
+                                "Unstimulated" = "#5F6369"),
+                groupshapes = c(21, 22))
+
 p.PT.HisCl.DR<- dat_inactivation %>%
   dplyr::filter(Experiment == "HisCl") %>%
   dplyr::filter(ThermoMode == "PT") %>%
+  dplyr::filter(Phenotype != "Unstimulated") %>%
   plot_tracking(dat = ., 
                 y = .$`Distance Ratio`, 
                 ylim = c(0,8),
@@ -149,8 +168,9 @@ ggarrange(
   p.PT.HisCl.dT,
   p.PT.HisCl.Speed,
   p.PT.HisCl.DR,
+  p.PT.HisCl.Speed2,
   ncol = 3,
-  nrow = 1
+  nrow = 2
 ) 
 
 ```
@@ -274,13 +294,14 @@ ggarrange(
   p.NT.HisCl.dT,
   p.NT.HisCl.Speed,
   p.NT.HisCl.DR,
+  p.PT.HisCl.Speed2,
   ncol = 3,
-  nrow = 3
+  nrow = 4
 ) %>%
   ggsave(filename ="strHisCl1AndSsTax4Behavior.pdf",
          device = cairo_pdf,
          width = 10.5,
-         height = 6.3,
+         height = 8.4,
          path = "../Outputs/")
 ```
 
@@ -1244,7 +1265,7 @@ temp <- dplyr::filter(dat_AFD_adaptation, Stimulus == "Reversal" & Species == "S
 compare_means(CaResponse ~ Stimulus,
               data = temp)
 ```
-Compare responses of Ss-AFD (Tc = 23C) at 13C (late window) versus Ss-AFD (Tc = 15C) at 22C (late window). This is asking if there warming-mediated hyperpolarization and cooling-mediated hyperpolarizations are the same "adapted" magnitude. The better way to do this would be a 2-way ANoVA 
+Compare responses of Ss-AFD (Tc = 23C) at 13C (late window) versus Ss-AFD (Tc = 15C) at 22C (late window). This is asking if there warming-mediated hyperpolarization and cooling-mediated hyperpolarizations are the same "adapted" magnitude. The better way to do this would be a 2-way ANOVA 
 ```{r}
 temp <-  dplyr::filter(dat_AFD_adaptation, Stimulus == "NT" & Species == "Ss") %>%
   dplyr::ungroup() %>%
