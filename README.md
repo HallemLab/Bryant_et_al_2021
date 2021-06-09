@@ -1,4 +1,4 @@
-# Bryant et al 2021 Code Repository
+# Bryant et al 2021 Code/Data Repository
 Code and other files used in the Bryant *et al* 2021 manuscript, "Neural basis of temperature-driven host seeking in a human-parasitic nematode.""  
 
 ## Code
