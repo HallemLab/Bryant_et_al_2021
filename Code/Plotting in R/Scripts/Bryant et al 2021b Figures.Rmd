@@ -1396,7 +1396,7 @@ Stats are Kruskal-Wallis Test with Dunn's Post tests for difference in response 
 xlabel <- "Ss-AFD-rGCs"
 ylabel <- " Temperature (C)"
 title <- "Threshold Temperature"
-ylim <- c(19, 45)
+ylim <- c(19, 42)
 
 dat.subset <-dplyr::filter(dat_ectopic_filtered, rGC != "ASE_ctrl")%>%
   dplyr::mutate(Strain = as_factor(Strain)) %>%
@@ -1458,7 +1458,7 @@ post.hoc <- dunn.test::dunn.test(dat.subset$Tmax,
 xlabel <- "Ss-AFD-rGCs"
 ylabel <- "Temperature (deg C)"
 title <- "Temperature driving max calcium response"
-ylim <- c(19,45)
+ylim <- c(19,42)
 
 stat.test.ectopic.Tmax <- dplyr::tibble(
   comparisons = post.hoc$comparisons,

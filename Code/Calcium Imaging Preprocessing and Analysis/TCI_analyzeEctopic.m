@@ -41,7 +41,7 @@ function [] = TCI_analyzeEctopic
 global pathstr
 global newdir
 
-[name, pathstr] = uigetfile2({'*.mat'},'Select experimental data file','/Users/astrasb/Box Sync/Lab_Hallem/Astra/Writing/Bryant et al 20xx/Data/Calcium Imaging/Ectopic Expression/pFictive Extended');
+[name, pathstr] = uigetfile2({'*.mat'},'Select experimental data file','/Users/astrasb/Box/Lab_Hallem/Astra/Writing/Bryant et al 20xx/Data/Calcium Imaging/Ectopic Expression/pFictive Extended');
 
 filename = {fullfile(pathstr, name)};
 
@@ -67,7 +67,7 @@ else
 end
 
 %% Select .mat file containing baseline data
-[basename, basepathstr] = uigetfile2({'*.mat'},'Select baseline data file','/Users/astrasb/Box Sync/Lab_Hallem/Astra/Writing/Bryant et al 20xx/Data/Calcium Imaging/Ectopic Expression/pFictive Extended/XL115','Multiselect','on');
+[basename, basepathstr] = uigetfile2({'*.mat'},'Select baseline data file','/Users/astrasb/Box/Lab_Hallem/Astra/Writing/Bryant et al 20xx/Data/Calcium Imaging/Ectopic Expression/pFictive Extended/XL115','Multiselect','on');
 basefilename = {fullfile(basepathstr, basename)};
 ctrl_n = regexp(basename,'_data','split');
 ctrl_n = ctrl_n{1};
@@ -85,7 +85,7 @@ global plttvr
 plottypes = {'Heatmap', 'Shaded Averages', 'Multiple Lines', 'None', 'Plots Only'};
 [answer, OK] = listdlg('PromptString','Pick plots to generate', ...
     'ListString', plottypes, 'ListSize', [160 160], ...
-    'InitialValue', [3 5]);
+    'InitialValue', [4]);
 answer = plottypes(answer);
 if any(contains(answer, 'None'))
     plotlogic = 0;
@@ -124,12 +124,14 @@ end
 avg_baseline = mean(Ctrl.CaResponse.subset,2,'omitnan');
 std_baseline = std(Ctrl.CaResponse.subset,[],2, 'omitnan');
 threshold_line = avg_baseline + (std_baseline *3);
+threshold_line_neg = avg_baseline - (std_baseline *3);
 avg_expt = mean(Exp.CaResponse.subset,2,'omitnan');
 n_expt = size(Exp.CaResponse.subset,2);
 N = 80; % required number of consectuive numbers following a first one (with a 500 ms frame rate, this is N*2 seconds)
 
 % RUN THIS FOR EACH INDIVIDUAL EXPERIMENTAL TRACE
-II = arrayfun(@(x)(find(Exp.CaResponse.subset(:,x)>=threshold_line)), [1:n_expt], 'UniformOutput', false);
+II = arrayfun(@(x)(find(Exp.CaResponse.subset(:,x)>=threshold_line | Exp.CaResponse.subset(:,x)<=threshold_line_neg)),...
+    [1:n_expt], 'UniformOutput', false);
 kk = arrayfun(@(x)([true;diff(II{x})~=1]), [1:n_expt], 'UniformOutput', false);
 ss = arrayfun(@(x)(cumsum(kk{x})), [1:n_expt], 'UniformOutput', false);
 xx = arrayfun(@(x)(histc(ss{x},1:ss{x}(end))), [1:n_expt], 'UniformOutput', false);
