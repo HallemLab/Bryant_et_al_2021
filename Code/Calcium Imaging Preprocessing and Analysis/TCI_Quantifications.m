@@ -81,8 +81,8 @@ else
     set(0,'DefaultFigureVisible','on');
 end
 
-%% Calculate Temperature at which point Experimental trace rises above 3*STD of control trace for at least N seconds
-% The amount of time the trace should be above threshold should reflect 0.25 degree C
+%% Calculate Temperature at which point Experimental trace deviates from control trace by 3*STD of control for at least N seconds
+% The amount of time the absolute value of the trace should be above threshold should reflect 0.25 degree C
 % Calculate based on ramp rate such that:
 % If ramp rate is 0.025C/s, the time it would take to increase 0.25C is 10 seconds, which equals 20 frames.
 
