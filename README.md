@@ -30,3 +30,15 @@ Contains supplemental data files for BioRxiv-submitted manuscript version.
 - **Supplemental Data File 1:** This file includes the results of statistical tests and exact p values, as well as the data used for statistical analyses. 
 
 - **Supplemental Data File 2:** This file includes all primers, plasmids, worm strains, and thermal ramps used in this study. 
+
+## License
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+
+This work is licensed under a
+[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
+
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
+
+[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
+[cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
+[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
