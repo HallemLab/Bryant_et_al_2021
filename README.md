@@ -4,7 +4,7 @@ Data, code, and hardware specs associated with the Bryant *et al* 2021 manuscrip
 ## Code
 Custom code for data acquisition and analysis. Folder includes the following subfolders:   
 
-- **Calcium Imaging Preprocessing and Analysis Code:** Used to align raw fluorescence values and temperature reads, plot traces, and quantify specific parameters related to calcium imaging.
+- **Calcium Imaging Preprocessing and Analysis:** Used to align raw fluorescence values and temperature reads, plot traces, and quantify specific parameters related to calcium imaging.
 - **Plotting in R:** Code written in R that generates various plots shown in Bryant *et al* 2021b manuscript.
 - **Thermotaxis Worm Tracker v3:** Matlab codebase for worm tracking using the thermotaxis area (version 3).
 - **Thermotaxis Worm Tracker v4:** Matlab codebase for worm tracking using the thermotaxis area (version 4).
