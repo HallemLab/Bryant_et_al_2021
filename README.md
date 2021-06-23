@@ -1,5 +1,5 @@
 # Bryant et al 2021 Code/Data Repository
-Code and other files used in the Bryant *et al* 2021 manuscript, "Neural basis of temperature-driven host seeking in the human threadworm *Strongyloides stercoralis*." 
+Data, code, and hardware specs associated with the Bryant *et al* 2021 manuscript, "Neural basis of temperature-driven host seeking in the human threadworm *Strongyloides stercoralis*." 
 
 ## Code
 Custom code for data acquisition and analysis. Folder includes the following subfolders:   
