@@ -64,10 +64,14 @@ if numfiles > 1
         
     % Normalize traces to the maximum calcium
     % response amongst all traces.
-    % Used for % Correlation plots and Heatmap with normalized data
+    % Used for % Correlation plots and Heatmap with normalized data.
     
     CaResponse.norm = CaResponse.subset/max(max(CaResponse.subset));
-    
+    % Note that in some cases the normalization above was adjusted manually,
+    % for plotting in a heatmap (using the lines below)
+        % i.e. in cases where there is an outlier in the responses that is
+        % skewing the color scaling in the heatmap. 
+        
     if assaytype ~= 2
         CaResponse.heat = CaResponse.norm;
         Temps.heat = Temps.subset;
@@ -81,6 +85,7 @@ if numfiles > 1
         CaResponse.heat = arrayfun(@(x)(CaResponse.full(time_adjustment_index(x):time_adjustment_index(x)+time.pad(4), x)), [1:numfiles], 'UniformOutput', false);
         CaResponse.heat = cell2mat(CaResponse.heat);
         CaResponse.heat =CaResponse.heat/max(max(CaResponse.heat));
+        
         
         Temps.heat = arrayfun(@(x)(Temps.full(time_adjustment_index(x):time_adjustment_index(x)+time.pad(4), x)), [1:numfiles], 'UniformOutput', false);
         Temps.heat = cell2mat(Temps.heat);
