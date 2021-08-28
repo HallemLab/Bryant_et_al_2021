@@ -1,11 +1,11 @@
 # Bryant et al 2021 Code/Data Repository
-Data, code, and hardware specs associated with the Bryant *et al* 2021 manuscript, "Neural basis of temperature-driven host seeking in the human threadworm *Strongyloides stercoralis*." 
+Data, code, and hardware specs associated with the Bryant *et al* 2021 manuscript, "Neural basis of temperature-driven host seeking in the human threadworm *Strongyloides stercoralis*." Includes files related to the version in BioRxiv, as well as submissions to peer-reviewed journals. (The BioRxiv version can be accessed at this link.)[https://www.biorxiv.org/content/10.1101/2021.06.23.449647v1]
 
 ## Code
 Custom code for data acquisition and analysis. Folder includes the following subfolders:   
 
 - **Calcium Imaging Preprocessing and Analysis:** Used to align raw fluorescence values and temperature reads, plot traces, and quantify specific parameters related to calcium imaging.
-- **Plotting in R:** Code written in R that generates various plots shown in Bryant *et al* 2021b manuscript.
+- **Plotting in R:** Code written in R that generates various plots shown in the manuscript.
 - **Thermotaxis Worm Tracker v3:** Matlab codebase for worm tracking using the thermotaxis area (version 3).
 - **Thermotaxis Worm Tracker v4:** Matlab codebase for worm tracking using the thermotaxis area (version 4).
 - **Worm Tracking Camera Controls:** Matlab functions for generating TTL pulse sequences via a Labjack USB DAQ device.
