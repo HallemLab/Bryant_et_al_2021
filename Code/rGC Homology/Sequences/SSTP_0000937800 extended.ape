@@ -1,55 +1,66 @@
-LOCUS       New_DNA                 3099 bp    DNA        linear       02-DEC-2021
+LOCUS       SSTP_0000937800_        3225 bp ds-DNA     linear       06-DEC-2021
 DEFINITION  .
 ACCESSION   
 VERSION     
 SOURCE      .
   ORGANISM  .
 COMMENT     
+COMMENT     
 COMMENT     ApEinfo:methylated:1
 FEATURES             Location/Qualifiers
      misc_signal     1440..1506
                      /locus_tag="TM domain?"
-                     /label="TM domain?"
-                     /ApEinfo_label="TM domain?"
+                     /label=TM domain?
                      /ApEinfo_fwdcolor="#008040"
                      /ApEinfo_revcolor="#008040"
                      /ApEinfo_graphicformat="arrow_data {{0 0.5 0 1 2 0 0 -1 0
                      -0.5} {} 0} width 5 offset 0"
-     misc_feature    2248..3099
+     misc_feature    2374..3225
                      /locus_tag="ORF"
-                     /label="ORF"
-                     /ApEinfo_label="ORF"
+                     /label=ORF
                      /ApEinfo_fwdcolor="cyan"
                      /ApEinfo_revcolor="green"
                      /ApEinfo_graphicformat="arrow_data {{0 0.5 0 1 2 0 0 -1 0
                      -0.5} {} 0} width 5 offset 0"
-     misc_feature    1767..1768
+     misc_feature    1893..1894
                      /locus_tag="new intron?"
-                     /label="new intron?"
-                     /ApEinfo_label="new intron?"
+                     /label=new intron?
                      /ApEinfo_fwdcolor="cyan"
                      /ApEinfo_revcolor="green"
                      /ApEinfo_graphicformat="arrow_data {{0 0.5 0 1 2 0 0 -1 0
                      -0.5} {} 0} width 5 offset 0"
-     misc_feature    1801..1846
+     misc_feature    1927..1972
                      /locus_tag="Exon 2"
-                     /label="Exon 2"
-                     /ApEinfo_label="Exon 2"
+                     /label=Exon 2
                      /ApEinfo_fwdcolor="cyan"
                      /ApEinfo_revcolor="green"
                      /ApEinfo_graphicformat="arrow_data {{0 0.5 0 1 2 0 0 -1 0
                      -0.5} {} 0} width 5 offset 0"
-     misc_feature    1801..3099
+     misc_feature    1927..3225
                      /locus_tag="New exon 2??"
-                     /label="New exon 2??"
-                     /ApEinfo_label="New exon 2??"
+                     /label=New exon 2??
                      /ApEinfo_fwdcolor="cyan"
                      /ApEinfo_revcolor="green"
                      /ApEinfo_graphicformat="arrow_data {{0 0.5 0 1 2 0 0 -1 0
                      -0.5} {} 0} width 5 offset 0"
-     misc_feature    1..1800
+     misc_feature    1..1731
                      /locus_tag="Exon 1"
-                     /label="Exon 1"
+                     /label=Exon 1
+                     /ApEinfo_fwdcolor="cyan"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 0.5 0 1 2 0 0 -1 0
+                     -0.5} {} 0} width 5 offset 0"
+     intron          1732..1733
+                     /locus_tag="new intron?(1)"
+                     /label=new intron?(1)
+                     /ApEinfo_label="new intron?"
+                     /ApEinfo_fwdcolor="#eb606c"
+                     /ApEinfo_revcolor="#eb606c"
+                     /ApEinfo_graphicformat="arrow_data {{0 0.5 0 1 2 0 0 -1 0
+                     -0.5} {} 0} width 5 offset 0"
+     misc_feature    1858..1926
+                     /locus_tag="Exon 1"
+                     /label=Exon 1(1)
                      /ApEinfo_label="Exon 1"
                      /ApEinfo_fwdcolor="cyan"
                      /ApEinfo_revcolor="green"
@@ -84,28 +95,30 @@ ORIGIN
      1501 TTGTGGAGAA CAAATCGTAA AAAAGAAGAG GAGATGTCAC GCTGGATAAT ACCATACATA
      1561 AGCTTAACGA AACCTGTCCC CGAAAAAAAA GAGTATGAAA AAAGTTTAAA TTCACTTGCA
      1621 TCAAATACTT ATTCTTTTTC AAGTAAGAAG ACATTTAACA ATATGAATGA AACCAATAAA
-     1681 TATATTTTTG CATACCTCAA TGGTGAGGGT GTTGCCGGAG AAAAACATAA AAATTTATTT
-     1741 CAAACATCAA AAAATGATAA GATAGAGTTA AGCAAACTAA TTAAATGGGA GCACGATAAT
-     1801 AATTTATTAC AAACTGACAA TTCTATTTTT GATGGATTCT TTTTAACTTC ATTAATTAAA
-     1861 GATCTTTCTG AAGGTCTTAA TTATATTCAT AATAGTTATT TAAAATTTCA TGGTAGATTA
-     1921 ACTTCAAAAA ACTGTTTTAT AAATGATAGA TGGCAATTAA AAATTAGTAA TTTTAATTCT
-     1981 TTTAAATTTC GTTGTTATGA AAAACTTGAA AGTAAAAATT TATTATGGAC AGCACCAGAA
-     2041 ATATTAAGAA GTGAAAGTTT TTTCGGATCC CAGGAAGGTG ATATTTATAG TTTTGCAATT
-     2101 ATATGTTCAG AAATAGTAAC TAAAAAATTA CCATGGGATT ATAATAATAG AAATGAAAGT
-     2161 ATTGAAGAGC TAATATATCT TTTAAAAAAA AGTGGATTAA ATACTTTAAG ACCTGATATT
-     2221 ATAATTGCTC CAAATATTGA TATTGATATG ACATATATCA CATTAATAAG AGATTGTTGG
-     2281 TCTGAAGACT GTAATAAAAG GCCAACAATA AAACAAATTC TACATTTATT AAGATCATTA
-     2341 AAAAATAAAA AAGCAAATAA TTTAATGGAT CATGTTTTTG GTATTTTAGA AGAATACTCC
-     2401 TCAACTCTAC GTCAAGAAAT TTCGGAGAGG ACAAGAGAAA TAGATGAGGA ACAAAAAAAG
-     2461 ACTGATTTAT TACTCTCAAA AATGTTACCA TCAGCTGTTG CTCAAAACTT AAAAAAAGGT
-     2521 AAAATAATTG AGCCAGAAAA TTTTGAAATG GTAACCATAT TTTTTGCTGA TATTGTTAAA
-     2581 TTTACTGATT TATCTTTGAA ATGTTCACCA ATGCAATTGA TAACATTAAT TAATGAATTA
-     2641 TTTACAATGT TTGATAATTT AATTGAAAGT TATGATGTTT ATAAAGTTGA AACTATAGGT
-     2701 GATGGTTATT TATGTGTTTC AGGACTTCCA ATAAGAAATA ATAATCATGC TGAAATAATA
-     2761 AGTGATTTAT CAATAAACTT TATGGATATA TGTAAAAGTT TTACGATACC ACATTTAGGT
-     2821 AGAGAAAAGA TAAATTTACG TATCGGTTGT AATAGTGGTC CATGTGTAGC AGGTGTTGTT
-     2881 GGTTTAACTA TGCCAAGATA TTGTCTTTTT GGTGATACTG TTAATACAGC ATCCAGAATG
-     2941 GAAAGTAATA GTAGAAGTGG AAGAATTCAT ATTGCAGAAA GCACATTCAA ACTTTTAAAT
-     3001 GATACAAATA AGTACGACTT AGAATGTAGA GGTGAAATTA TTATAAAAGG AAAAGGTGTT
-     3061 ATGACGACAT ATTGGCTTAA TGGATATAAA AATAATTAG  
+     1681 TATATTTTTG CATACCTCAA TGGTGAGGGT GTTGCCGGAG AAAAACATAA AGTTAATAAG
+     1741 TTTTATGGAA TGTGCTTAGA CTATATGCAT CCCATTTCAC TTTGGAAATA TTGTAGTAGG
+     1801 GGAAGCATTT TGTAAGTGAT AATAATTTTT TGATTTTTAA TTTATTATTT TTAATAGAAT
+     1861 TTATTTCAAA CATCAAAAAA TGATAAGATA GAGTTAAGCA AACTAATTAA ATGGGAGCAC
+     1921 GATAATAATT TATTACAAAC TGACAATTCT ATTTTTGATG GATTCTTTTT AACTTCATTA
+     1981 ATTAAAGATC TTTCTGAAGG TCTTAATTAT ATTCATAATA GTTATTTAAA ATTTCATGGT
+     2041 AGATTAACTT CAAAAAACTG TTTTATAAAT GATAGATGGC AATTAAAAAT TAGTAATTTT
+     2101 AATTCTTTTA AATTTCGTTG TTATGAAAAA CTTGAAAGTA AAAATTTATT ATGGACAGCA
+     2161 CCAGAAATAT TAAGAAGTGA AAGTTTTTTC GGATCCCAGG AAGGTGATAT TTATAGTTTT
+     2221 GCAATTATAT GTTCAGAAAT AGTAACTAAA AAATTACCAT GGGATTATAA TAATAGAAAT
+     2281 GAAAGTATTG AAGAGCTAAT ATATCTTTTA AAAAAAAGTG GATTAAATAC TTTAAGACCT
+     2341 GATATTATAA TTGCTCCAAA TATTGATATT GATATGACAT ATATCACATT AATAAGAGAT
+     2401 TGTTGGTCTG AAGACTGTAA TAAAAGGCCA ACAATAAAAC AAATTCTACA TTTATTAAGA
+     2461 TCATTAAAAA ATAAAAAAGC AAATAATTTA ATGGATCATG TTTTTGGTAT TTTAGAAGAA
+     2521 TACTCCTCAA CTCTACGTCA AGAAATTTCG GAGAGGACAA GAGAAATAGA TGAGGAACAA
+     2581 AAAAAGACTG ATTTATTACT CTCAAAAATG TTACCATCAG CTGTTGCTCA AAACTTAAAA
+     2641 AAAGGTAAAA TAATTGAGCC AGAAAATTTT GAAATGGTAA CCATATTTTT TGCTGATATT
+     2701 GTTAAATTTA CTGATTTATC TTTGAAATGT TCACCAATGC AATTGATAAC ATTAATTAAT
+     2761 GAATTATTTA CAATGTTTGA TAATTTAATT GAAAGTTATG ATGTTTATAA AGTTGAAACT
+     2821 ATAGGTGATG GTTATTTATG TGTTTCAGGA CTTCCAATAA GAAATAATAA TCATGCTGAA
+     2881 ATAATAAGTG ATTTATCAAT AAACTTTATG GATATATGTA AAAGTTTTAC GATACCACAT
+     2941 TTAGGTAGAG AAAAGATAAA TTTACGTATC GGTTGTAATA GTGGTCCATG TGTAGCAGGT
+     3001 GTTGTTGGTT TAACTATGCC AAGATATTGT CTTTTTGGTG ATACTGTTAA TACAGCATCC
+     3061 AGAATGGAAA GTAATAGTAG AAGTGGAAGA ATTCATATTG CAGAAAGCAC ATTCAAACTT
+     3121 TTAAATGATA CAAATAAGTA CGACTTAGAA TGTAGAGGTG AAATTATTAT AAAAGGAAAA
+     3181 GGTGTTATGA CGACATATTG GCTTAATGGA TATAAAAATA ATTAG 
 //
