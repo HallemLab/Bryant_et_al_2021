@@ -34,19 +34,19 @@ p <- ggtree(tree, layout = "circular") +
     #geom_hilight(node=86, fill="grey", alpha=.5, extend = 3) +
     xlim(0, 6)
 
-p2 <- groupOTU(p, grp, 'Species') + aes(color = Species) +
-    scale_color_carto_d(palette = "Vivid")
+# p2 <- groupOTU(p, grp, 'Species') + aes(color = Species) +
+#     scale_color_carto_d(palette = "Vivid")
 
 p3 <- groupOTU(p, grp2, 'Species') + aes(color = Species) +
     scale_color_manual(values = speciescolors)
 
-ggsave(plot = p2,
-       filename ="rGC_tree.pdf",
-       device = cairo_pdf,
-       width = 7)
+# ggsave(plot = p2,
+#        filename ="rGC_tree.pdf",
+#        device = cairo_pdf,
+#        width = 7)
 
 ggsave(plot = p3,
-       filename ="rGC_tree_species.pdf",
+       filename ="rGC_tree.pdf",
        device = cairo_pdf,
        width = 7)
     
