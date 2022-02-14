@@ -69,6 +69,16 @@ dat_inactivation <- read_excel(dat_inactivation_file, sheet = 1) %>%
                                                          "NoCas9", "Ss-tax-4", 
                                                          "Unstimulated"))) 
 
+dat_HisClimaging_file <- c('../Data/AFDHisCl1Imaging_R_Import.xlsx')
+
+if (is_empty(dat_HisClimaging_file)){
+  dat_HisClimaging_file <- file.choose()
+}
+dat_HisClimaging <- read_excel(dat_HisClimaging_file, sheet = 1) %>%
+  group_by(Experiment, Phenotype) %>%
+  dplyr::mutate(Phenotype = as_factor(Phenotype)) %>%
+  dplyr::mutate(Experiment = as_factor(Experiment))
+
 ```
 
 ## Plot Templates
@@ -229,6 +239,43 @@ ggarrange(
 
 ```
 
+## Calcium imaging of HisCl1-silenced AFD Neurons
+Thermosensory response properties of *S. stercoralis* AFD neurons co-expressing *strYC3.60* and *strHisCl1*. 
+
+*Sr-gcy-23.2p::strYC3.60; Sr-gcy-23.2p::strHisCl1::P2A::mRFPmars* iL3s were treated for at least 2 hours with either BU or 50 mM histamine, then exposed to a naturalistic warming ramp (20-34$^\circ$C ramp; Tc = 23$^\circ$C).  
+
+### Sum and Max of Absolute Deviation from Baseline
+```{r}
+p.HisCl.sum<- dat_HisClimaging %>%
+  plot_tracking(dat = ., 
+                y = .$Sum_AbsDeviation, 
+                ylim = c(0,20000),
+                xlabel = NULL,
+                ylabel = "Sum abs deltaR/R0",
+                title = "HisCl1 Imaging: Sum Absolute Deviation",
+                groupcolors = c("BU" = "#5F6369", 
+                                "Histamine" = "#99772C"),
+                groupshapes = 21)
+
+p.HisCl.max<- dat_HisClimaging %>%
+  plot_tracking(dat = ., 
+                y = .$Max_AbsDeviation, 
+                ylim = c(0,80),
+                xlabel = NULL,
+                ylabel = "Max abs deltaR/R0",
+                title = "HisCl1 Imaging: Max Absolute Deviation",
+                groupcolors = c("BU" = "#5F6369", 
+                                "Histamine" = "#99772C"),
+                groupshapes = 21)
+
+ggarrange(
+  p.HisCl.sum,
+  p.HisCl.max,
+  ncol = 2,
+  nrow = 1
+) 
+```
+
 ## *Ss-tax-4* CRISPR/Cas9 KO
 CRISPR/Cas9-mediated targeted mutagensis of the *Ss-tax-4* gene. Control worms were not injected with Cas9 plasmid vectors.
 
@@ -297,6 +344,8 @@ ggarrange(
   p.NT.HisCl.Speed,
   p.NT.HisCl.DR,
   p.PT.HisCl.Speed2,
+  p.HisCl.sum,
+  p.HisCl.max,
   ncol = 3,
   nrow = 4
 ) %>%
@@ -1103,7 +1152,7 @@ if (is_empty(dat_adapt_file)){
 }
 dat_AFD_adaptation <- read_excel(dat_adapt_file, sheet = 1) %>%
   dplyr::mutate(Species = as_factor(Species)) %>%
-  dplyr::mutate(Stimulus = factor(Stimulus, levels = c("Reversal", "pFPT", "pFPTe", "NT"))) %>%
+  dplyr::mutate(Stimulus = factor(Stimulus, levels = c("Reversal", "pFPT", "pFPTe", "NT", "FlincG3"))) %>%
   dplyr::mutate(Tc = factor(Tc, levels = c(23, 15))) %>%
   dplyr::mutate(UID = as_factor(UID)) %>%
   pivot_longer(cols = c(AdaptWindowEarly, AdaptWindowLate),
@@ -1136,7 +1185,7 @@ title <- "Calcium Response as a function of time during T(max)"
 ylim <- c(-50, 50)
 
 p.Tmax.adapt <- dat_AFD_adaptation %>%
-  dplyr::filter(Stimulus != "NT" & Species != "Ce") %>%
+  dplyr::filter(Stimulus != "NT" & Stimulus != "FlincG3" & Species != "Ce") %>%
   ggplot(mapping = aes(x = Bin, y = CaResponse)) + 
   stat_boxplot(geom = "errorbar", 
                width = 0.25,
@@ -1165,6 +1214,45 @@ p.Tmax.adapt <- dat_AFD_adaptation %>%
   theme(aspect.ratio = 2/1) 
 
 print(p.Tmax.adapt)
+```
+
+### cGMP Response Across T(max)
+```{r}
+xlabel <- "TimingWindow"
+ylabel <- "Median FlincG3Response, normalized to Tc"
+title <- "cGMP Response as a function of time during T(max)"
+ylim <- c(-50, 50)
+
+p.Tmax.FlincG3adapt <- dat_AFD_adaptation %>%
+  dplyr::filter(Stimulus == "FlincG3") %>%
+  ggplot(mapping = aes(x = Bin, y = CaResponse)) + 
+  stat_boxplot(geom = "errorbar", 
+               width = 0.25,
+               size = .5) +
+  geom_boxplot(width = 0.5,
+               outlier.shape = NA,
+               fatten = 1,
+               key_glyph = "rect",
+               alpha = 0.3,
+               show.legend = F,
+               aes(fill = Bin)) +
+  geom_jitter(size = 1,
+              stroke = .75,
+              width = .2,
+              aes(color = Bin, shape = Stimulus)) +
+  facet_grid(. ~ Stimulus)+
+  scale_y_continuous(limits = ylim, 
+                     expand = expansion(add = 0)) +
+  scale_color_carto_d(palette = "Vivid") +
+  scale_fill_carto_d(palette = "Vivid") +
+  scale_shape_manual(values = c(21))  +
+  xlab(xlabel) +
+  ylab(ylabel) +
+  ggtitle(title) +
+  theme_Publication() +
+  theme(aspect.ratio = 2/1) 
+
+print(p.Tmax.FlincG3adapt)
 ```
 
 ### Calcium Response Ss vs Ce at T(max)
@@ -1218,7 +1306,7 @@ ylabel <- "Proportion of Worms"
 title <- "Deviation of Calcium Trace from Holding Response"
 
 p.bar.adapt.late <- dat_AFD_adaptation %>%
-  dplyr::filter(Stimulus != "NT") %>%
+  dplyr::filter(Stimulus != "NT" & Stimulus != "FlincG3") %>%
   dplyr::filter(Species != "Ce") %>%
   ggplot(mapping = aes(x = Stimulus)) + 
   geom_bar(aes(fill = Dir_late), position = "fill") +
@@ -1303,6 +1391,7 @@ ggarrange(
   p.Tmax.adapt,
   p.Tmax.adapt_species,
   p.Tmin.adapt,
+  p.Tmax.FlincG3adapt,
   ncol = 2,
   nrow = 4
 ) %>%
@@ -1312,7 +1401,6 @@ ggarrange(
          height = 8.4,
          path = "../Outputs/")
 ```
-
 
 # Ss-AFD-rGC Ecoptic Expression Analysis
 Analysis and plotting for a series of experiments testing the effect of 

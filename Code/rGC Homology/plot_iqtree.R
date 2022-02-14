@@ -26,7 +26,7 @@ speciescolors <- c("Elegans" = "olivedrab",
                    "Stercoralis" = "coral",
                    "Ratti" = "darkorchid")
 
-p <- ggtree(tree, layout = "circular") +
+p <- ggtree(tree, layout = "rectangular") +
     geom_tiplab(size = 2, hjust = -.05) + 
     geom_cladelabel(node = 134, label = "AFD-specific rGCs", align = T, offset = 1.2,
                     offset.text = .3, barsize = 1, angle = -4,
@@ -46,7 +46,7 @@ p3 <- groupOTU(p, grp2, 'Species') + aes(color = Species) +
 #        width = 7)
 
 ggsave(plot = p3,
-       filename ="rGC_tree.pdf",
+       filename ="rGC_tree_rectangular.pdf",
        device = cairo_pdf,
        width = 7)
     
