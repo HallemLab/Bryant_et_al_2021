@@ -1,16 +1,8 @@
-function [Temps, CaResponse] = TCI_Primary ()
-%% TCI_Primary processes YC3.6 calcium responses to a variety of thermotaxis ramps
-%   [] = TCI_Primary()
+function [Temps, Response] = strFlincG3_Primary ()
+%% strFlincG3_Primary processes strFlincG3 responses to a variety of thermosensory stimuli
+%   [] = strFlincG3_Primary()
+%   This is the top-level script for analysis of temperature-driven cGMP imaging responses. 
 %
-%
-%% Revision History
-%   4-1-20:     Adapted from an older version of the code by ASB
-%   4-2-20:     Added ability to process negative ramps (ASB)
-%   4-25-20:    Increased output saved in xlsx file to include metadata and
-%                   full traces, to improve downstream import into RStudio.
-%   2020-09-10  Results are no longer saved in the .mat file.\
-%   2021-02-17  Made updates to analysis and plotting, also put all
-%               associated files on GitHub so this revision history is now defunct
 
 clear all
 close all
@@ -22,10 +14,7 @@ global preprocessed
 global newdir
 
 
-[name, pathstr] = uigetfile2({'*.csv; *.mat'},'Select imaging data','D:\Hallem Lab\Astra\C elegans\pFictive Extended\PS5858','Multiselect','on');
-
-
-%[name, pathstr] = uigetfile2({'*.csv; *.mat'},'Select imaging data','D:\Hallem Lab\Astra\S stercoralis\pASB52\Reversal','Multiselect','on');
+[name, pathstr] = uigetfile2({'*.csv; *.mat'},'Select imaging data','D:\Hallem Lab\Astra\S stercoralis\pASB67\','Multiselect','on');
 
 if isequal(name,0)
     error('User canceled analysis session');
@@ -42,7 +31,7 @@ else
 end
 
 %% Gather Stimulus Protocol Specific Parameters
-[Stim, time, Pname] = TCI_Params ();
+[Stim, time, Pname] = FlincG3_Params ();
 
 %% Ask which plots to generate
 global plotlogic
@@ -55,7 +44,7 @@ global pltadapt
 plottypes = {'Individual Traces', 'Heatmap', 'Multiple Lines', 'Steady State','Temp vs Response','None', 'Plots Only'};
 [answer, OK] = listdlg('PromptString','Pick plots to generate', ...
     'ListString', plottypes, 'ListSize', [160 160], ...
-    'InitialValue', [1 7]);
+    'InitialValue', [1]);
 answer = plottypes(answer);
 if any(contains(answer, 'None'))
     plotlogic = 0;
@@ -105,7 +94,7 @@ end
 if endsWith(filename,'mat')
     % Pre-processed data in .mat format.
     load(filename{1});
-    numfiles = size(CaResponse.subset,2);
+    numfiles = size(Response.subset,2);
     preprocessed = 1;
     n = regexp(name,'_data','split');
     
@@ -113,7 +102,7 @@ end
 
 %% Check if for Stimulus Protocol Parameters, load if necessary
 if ~exist('Pname')
-    [Stim, time, Pname] = TCI_Params ();
+    [Stim, time, Pname] = FlincG3_Params ();
 end
 
 %% Load and Process Data in .csv file format
@@ -140,24 +129,24 @@ if isempty(preprocessed) || preprocessed == 0
         [temp.subset(:,1), temp.subset(:,2),... 
             temp.full(:,1), temp.full(:,2), ...
             temp.prestim(:,1), temp.prestim(:,2), ...
-            temp.complete(:,1), temp.complete(:,2)]=TCI_LoadTrace(filename{i},tempname, fulltemp,Stim, time);
+            temp.complete(:,1), temp.complete(:,2)]=LoadTrace(filename{i},tempname, fulltemp,Stim, time);
         sz.subset = size(temp.subset,1);
         sz.full = size(temp.full,1);
         sz.prestim = size(temp.prestim, 1);
         sz.complete = size(temp.complete, 1);
         
-        CaResponse.subset(1:sz.subset,i) = temp.subset(:,1);
+        Response.subset(1:sz.subset,i) = temp.subset(:,1);
         Temps.subset(1:sz.subset,i) = temp.subset(:,2);
         
-        CaResponse.full(1:sz.full,i) = temp.full(:,1);
+        Response.full(1:sz.full,i) = temp.full(:,1);
         Temps.full(1:sz.full,i) = temp.full(:,2);
         
-        CaResponse.prestim(1:sz.prestim,i) = temp.prestim(:,1);
+        Response.prestim(1:sz.prestim,i) = temp.prestim(:,1);
         Temps.prestim(1:sz.prestim,i) = temp.prestim(:,2);
-        CaResponse.prestim(Temps.prestim == 0) = NaN;
+        Response.prestim(Temps.prestim == 0) = NaN;
         Temps.prestim(Temps.prestim == 0) = NaN;
         
-        CaResponse.complete(1:sz.complete, i) = temp.complete(:,1);
+        Response.complete(1:sz.complete, i) = temp.complete(:,1);
         Temps.complete(1:sz.complete, i) = temp.complete(:,2);
         
         clear temp
@@ -177,16 +166,16 @@ if exist(newdir,'dir') == 0
 end
 
 %% Quantifications
-[Temps, CaResponse, Results] = TCI_Quantifications (Temps,CaResponse, Stim, time,n);
+[Temps, Response, Results] = FlincG3_Quantifications (Temps,Response, Stim, time,n);
 
 %% Save Batch Data
 if numfiles >1
-    save (fullfile(pathstr,strcat(n,'_data.mat')),'CaResponse', 'Temps','UIDs','Stim','time','Pname');
+    save (fullfile(pathstr,strcat(n,'_data.mat')),'Response', 'Temps','UIDs','Stim','time','Pname');
 end
 
 %% Plot Data
 if plotlogic > 0
-    TCI_Plots(Temps, CaResponse,Stim, UIDs, n, numfiles, Results, time);
+    FlincG3_Plots(Temps, Response,Stim, UIDs, n, numfiles, Results, time);
 end
 
 %% Save Data
@@ -233,8 +222,8 @@ if analysislogic == 1
     writetable(U, fullfile(newdir, strcat(n,'_results.xlsx')), 'Sheet','Metadata');
     
     % Save Processed Traces
-    V = array2table(CaResponse.full, 'VariableNames',UIDs);
-    writetable(V, fullfile(newdir, strcat(n,'_results.xlsx')), 'Sheet','CaResponseTrace');
+    V = array2table(Response.full, 'VariableNames',UIDs);
+    writetable(V, fullfile(newdir, strcat(n,'_results.xlsx')), 'Sheet','ResponseTrace');
     
     W = array2table(Temps.full, 'VariableNames',UIDs);
     writetable(W, fullfile(newdir, strcat(n,'_results.xlsx')), 'Sheet','TempTrace');

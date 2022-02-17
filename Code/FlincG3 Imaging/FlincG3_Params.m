@@ -1,5 +1,5 @@
-function [Stim, time, Pname] = TCI_Params(answer);
-%% TCI_Params
+function [Stim, time, Pname] = FlincG3_Params(answer);
+%% FlincG3_Params
 %   Contains user-defined variables describing thermal stimuli for calcium
 %   imaging experiments.
 %
@@ -18,8 +18,10 @@ global assaytype
 if ~exist('answer')
     [answer, ok] = listdlg('PromptString','Which stimulus was applied during these recordings?',...
         'SelectionMode','single',...
-        'ListString',{'Pos Ramp 4 (23->17->40->23)';  'Neg Ramp 2 (23->22->13->23)'; 'pFictive PT (23->20->34->23)'; 'pFictive PT15 (15->12->26->15)';'pF Extended (23->20->40->23)'; 'pF PT15 extended (15->12->32->15)'; 'Reversal (15->22->15)'}, ...
-        'InitialValue', [3]);
+        'ListString',{'Pos Ramp 4 (23->17->40->23)';  'Neg Ramp 2 (23->22->13->23)';...
+        'pFictive PT (23->20->34->23)'; 'pFictive PT15 (15->12->26->15)';...
+        'pF Extended (23->20->40->23)'; 'pF PT15 extended (15->12->32->15)'; ...
+        'Reversal (15->22->15)'; 'pF Short (23->20->25->23)'});
     
     if ok<1
         error('User canceled analysis session');
@@ -146,4 +148,19 @@ case 2 % Neg Ramp 2
         time.rampspeed = 0.025; % rate of temperature change during primary phase, in degrees per second
         time.pad = [0; 0 ; 0; 900]; % start/end times of standardized "full" range for export; if Stim.min == Stim.F0, first 2 values should be 0,0
         Pname = 'Reversal';
+        
+    case 8 % pFictive 20->24C
+        assaytype = 1;
+        Stim.min = 20;
+        Stim.max = 25;
+        Stim.F0 = 20;
+        Stim.holding = 23;
+        Stim.NearTh = [20; 23];
+        Stim.AboveTh = [23];
+        Stim.Analysis = [22; 25];
+        time.soak = 120; % duration (sec) of soak time at coolest point in thermal stimulus; indicates amount of time to wait before gathering data for export
+        time.stimdur = 300; % duration (in sec) from start of F0 to end of upwards ramp
+        time.rampspeed = 0.025; % rate of temperature change during primary phase, in degrees per second
+        time.pad = [60; 0 ; 120; 600]; % start/end times of standardized "full" range for export; if Stim.min == Stim.F0, first 2 values should be 0,0
+        Pname = 'pF PT short';
 end
