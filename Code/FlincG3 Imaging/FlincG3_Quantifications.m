@@ -203,12 +203,12 @@ for i = 1:n_expt
     if assaytype ~=2
         temp = (Response.full(find(Temps.full(:,i)>=Stim.max, 1,'first'):find(Temps.full(:,i)>=Stim.max-0.1, 1,'last'),i));
     
-        Results.AdaptBins(1,i) = median(temp(1:15));
-        Results.AdaptBins(2,i) = median(temp(31:end));
+        Results.AdaptBins(1,i) = median(temp(1:20));
+        Results.AdaptBins(2,i) = median(temp(61:end));
     else
         temp = (Response.full(find(Temps.full(:,i)<=Stim.min, 1,'first'):find(Temps.full(:,i)<=Stim.min+0.1, 1,'last'),i));
-        Results.AdaptBins(1,i) = median(temp(1:15));
-        Results.AdaptBins(2,i) = median(temp(31:end));
+        Results.AdaptBins(1,i) = median(temp(1:20));
+        Results.AdaptBins(2,i) = median(temp(61:end));
     
     end   
 end

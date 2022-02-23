@@ -242,7 +242,7 @@ ggarrange(
 ## Calcium imaging of HisCl1-silenced AFD Neurons
 Thermosensory response properties of *S. stercoralis* AFD neurons co-expressing *strYC3.60* and *strHisCl1*. 
 
-*Sr-gcy-23.2p::strYC3.60; Sr-gcy-23.2p::strHisCl1::P2A::mRFPmars* iL3s were treated for at least 2 hours with either BU or 50 mM histamine, then exposed to a naturalistic warming ramp (20-34$^\circ$C ramp; Tc = 23$^\circ$C).  
+*Sr-gcy-23.2p::strYC3.60; Sr-gcy-23.2p::strHisCl1::P2A::mRFPmars* iL3s were treated for at least 2 hours with either BU or 50 mM histamine, then exposed to a warming ramp (20-34$^\circ$C ramp; Tambient = 23$^\circ$C).  
 
 ### Sum and Max of Absolute Deviation from Baseline
 ```{r}
@@ -361,15 +361,14 @@ Thermosensory response properties of *C. elegans* AFD (strain = IK890), and *S. 
 
 The data reflect the responses of *C. elegans* AFD and *S. stercoralis* AFD to the following thermal stimuli:  
 
-+ Naturalistic warming ramps (Tc = 23$^\circ$C):  
++ Warming ramps (Tambient = 23$^\circ$C):  
   - Pseudo-fictive PT 20-34$^\circ$C ramp
   - Pseudo-fictive PTe 20-40$^\circ$C ramp
-+ Naturalistic warming ramps (Tc = 15$^\circ$C): 
++ Warming ramps (Tambient = 15$^\circ$C): 
   - Pseudo-fictive PT15 12-26$^\circ$C ramp
   - Pseudo-fictive PT15e 12-32$^\circ$C ramp
-+ Rapid warming and cooling ramps:
-  - Non-physiological PT 17-40$^\circ$C ramp
-  - Non-physiological NT 20-12$^\circ$C ramp
++ Cooling ramps (Tambient = 23$^\circ$C): 
+  - NT 22-13$^\circ$C ramp
 
 ## Data Inputs
 These data were preprocessed and calculated by TCI Matlab code.  
@@ -380,36 +379,24 @@ if (is_empty(dat_AFD_file)){
   dat_AFD_file <- file.choose()
 }
 dat_AFD <- read_excel(dat_AFD_file, sheet = 1) %>%
-  group_by(Species,Tc, Stimulus) %>%
+  group_by(Species,Tambient, Stimulus) %>%
   dplyr::mutate(Species = as_factor(Species)) %>%
-  dplyr::mutate(Stimulus = factor(Stimulus, levels = c("pFPT", "pFPTe", "R4", "NT"))) %>%
-  dplyr::mutate(Tc = factor(Tc, levels = c(23, 15)))
+  dplyr::mutate(Stimulus = factor(Stimulus, levels = c("pFPT", "pFPTe", "NT"))) %>%
+  dplyr::mutate(Tambient = factor(Tambient, levels = c(23, 15)))
 
-dat_AFD_15 <- dplyr::filter(dat_AFD, Tc == 15) %>%
-  dplyr::filter(Stimulus != "R4") %>%
+dat_AFD_15 <- dplyr::filter(dat_AFD, Tambient == 15) %>%
   dplyr::filter(Stimulus != "NT")
 
-dat_AFD_23 <- dplyr::filter(dat_AFD, Tc == 23) %>%
-  dplyr::filter(Stimulus != "R4") %>%
+dat_AFD_23 <- dplyr::filter(dat_AFD, Tambient == 23) %>%
   dplyr::filter(Stimulus != "NT")
 
-dat_AFD_allTc <- dat_AFD %>%
-  dplyr::filter(Stimulus != "R4") %>%
+dat_AFD_allTambient <- dat_AFD %>%
   dplyr::filter(Stimulus != "NT")
-
-dat_AFD_R4 <- dat_AFD %>%
-  dplyr::filter(Stimulus == "R4")
-
-dat_AFD_across <- dplyr::filter(dat_AFD, Tc == 23)  %>%
-  dplyr::filter(Stimulus != "NT") %>%
-  dplyr::mutate(Type = as_factor(case_when(
-    Stimulus == "R4" ~ "Fast",
-    Stimulus != "R4" ~ "Slow")))
 
 ```
 
 
-## Naturalistic warming stimuli  
+## Warming stimulus  
 Responses of *Ss*-AFD and *Ce*-AFD to thermal stimuli based on the temperatures experienced by *S. stercoralis* iL3s performing postitive thermotaxis in a 20-34C temperature gradient.  In these cases, warming ramp speeds are 0.025C/s.  
 
 ### Plot Templates  
@@ -430,7 +417,7 @@ plot_AFD <- function(dat, y, ylim, xlabel, ylabel, stat.test, stat.y.position, t
     geom_jitter(size = 1,
                 stroke = .75,
                 width = .2,
-                aes(color = Species, shape = Stimulus)) +
+                aes(color = interaction(Species,Stimulus), shape = Stimulus)) +
     stat_pvalue_manual(stat.test, 
                        y.position = stat.y.position,
                        tip.length = 0,
@@ -450,7 +437,7 @@ plot_AFD <- function(dat, y, ylim, xlabel, ylabel, stat.test, stat.y.position, t
 
 
 plot_AFD_Speciesfacet <- function(dat, y, ylim, xlabel, ylabel, title = NULL){
-  ggplot(data = dat, mapping = aes(x = Tc, y = y)) + 
+  ggplot(data = dat, mapping = aes(x = Tambient, y = y)) + 
     stat_boxplot(geom = "errorbar", 
                  width = 0.25,
                  size = .5) +
@@ -464,7 +451,7 @@ plot_AFD_Speciesfacet <- function(dat, y, ylim, xlabel, ylabel, title = NULL){
     geom_jitter(size = 1,
                 stroke = .75,
                 width = .2,
-                aes(color = Species, shape = Stimulus)) +
+                aes(color = interaction(Species,Stimulus), shape = Stimulus)) +
     facet_grid(. ~ Species) +
     scale_y_continuous(limits = ylim, 
                        expand = expansion(add = 0)) +
@@ -481,21 +468,21 @@ plot_AFD_Speciesfacet <- function(dat, y, ylim, xlabel, ylabel, title = NULL){
 
 ### Temperature Threshold  
 
-The temperature threshold for each worm. Threshold is defined as the temperature at which point the caclium response deviates from baseline (F0) response by at least 3 * STD of baseline, for the duration of time it takes for the stimulus ramp to advance 0.25C. For the naturalistic temperature ramps (.025C/s) plotted here, this time is therefore 10 seconds.  
+The temperature threshold for each worm. Threshold is defined as the temperature at which point the caclium response deviates from baseline (F0) response by at least 3 * STD of baseline, for the duration of time it takes for the stimulus ramp to advance 0.25C. For the warming temperature ramps (.025C/s) plotted here, this time is therefore 10 seconds.  
 
 Baseline (F0) responses are defined as the calcium responses at the followin temperatures:  
 
-* For Tc = 23, F0 = 20C  
-* For Tc = 15, F0 = 12C
+* For Tambient = 23, F0 = 20C  
+* For Tambient = 15, F0 = 12C
 
 Statistics are the results of Wilcoxon signed-rank tests.  
 
-#### Tc = 23C  
+#### Tambient = 23C  
 
 ``` {r, message=FALSE}
 xlabel <- "Species"
 ylabel <- " Temperature (C)"
-title <- "Threshold Temperature, Tc = 23C"
+title <- "Threshold Temperature, Tambient = 23C"
 ylim <- c(10, 40)
 
 stat.thresh.23 <- compare_means(Temperature ~ Species, 
@@ -514,17 +501,17 @@ p.thresh.23 <- plot_AFD(dat_AFD_23,
 print(p.thresh.23)
 ```
 
-#### Tc = 15C  
+#### Tambient = 15C  
 
 ``` {r, message=FALSE}
 xlabel <- "Species"
 ylabel <- " Temperature (C)"
-title <- "Threshold Temperature, Tc = 15C"
+title <- "Threshold Temperature, Tambient = 15C"
 ylim <- c(10, 40)
 
 
-p.thresh.allTc <- plot_AFD_Speciesfacet(dat_AFD_allTc, 
-                                        dat_AFD_allTc$Temperature, 
+p.thresh.allTc <- plot_AFD_Speciesfacet(dat_AFD_allTambient, 
+                                        dat_AFD_allTambient$Temperature, 
                                         ylim,
                                         xlabel, 
                                         ylabel,
@@ -537,15 +524,15 @@ print(p.thresh.allTc)
 
 Is the calcium response above threshold linearly correlated with changes in temperature. Correlation between calcium repsonses and temperature are analyzed across the following temperature ranges:
 
-* For Tc = 23, from 25 - 34C (pF PT) or 25 - 40C (pF PTe)
-* For Tc = 15, from 17 - 26C (pF PT15) or 17 - 32C (pF PT15e)  
+* For Tambient = 23, from 25 - 34C (pF PT) or 25 - 40C (pF PTe)
+* For Tambient = 15, from 17 - 26C (pF PT15) or 17 - 32C (pF PT15e)  
 
-#### Tc = 23C  
+#### Tambient = 23C  
 
 ```{r, message=FALSE}
 
 ylabel <- "Pearson's R"
-title <- "T vs Ca Correlation, Tc = 23C"
+title <- "T vs Ca Correlation, Tambient = 23C"
 ylim <- c(-1.5, 1.5)
 stat.pearson.23 <- compare_means(AboveThPearsonR ~ Species, 
                                  data = dat_AFD_23,
@@ -563,17 +550,17 @@ p.pearson.23 <- plot_AFD(dat_AFD_23,
 print(p.pearson.23)
 ```
 
-#### Tc = 15C  
+#### Tambient = 15C  
 
 ```{r, message=FALSE}
 
 ylabel <- "Pearson's R"
-title <- "T vs Ca Correlation, Tc = 15C"
+title <- "T vs Ca Correlation, Tambient = 15C"
 ylim <- c(-1.5, 1.5)
 xlabel <- "Cultivation Temp"
 
-p.pearson.allTc <- plot_AFD_Speciesfacet(dat_AFD_allTc, 
-                                         dat_AFD_allTc$AboveThPearsonR, 
+p.pearson.allTc <- plot_AFD_Speciesfacet(dat_AFD_allTambient, 
+                                         dat_AFD_allTambient$AboveThPearsonR, 
                                          ylim,
                                          xlabel, 
                                          ylabel,
@@ -586,17 +573,17 @@ print(p.pearson.allTc)
 
 Is the calcium response near threshold linearly correlated with changes in temperature. Correlation between calcium repsonses and temperature are analyzed across the following temperature ranges:
 
-* For Tc = 23, from 20 - 25C
-* For Tc = 15, from 12 - 17C  
+* For Tambient = 23, from 20 - 25C
+* For Tambient = 15, from 12 - 17C  
 
 Statistics are the results of Wilcoxon signed-rank tests. 
 
-#### Tc = 23C  
+#### Tambient = 23C  
 
 ```{r, message=FALSE}
 
 ylabel <- "Spearman's R"
-title <- "T vs Ca Correlation, Tc = 23C"
+title <- "T vs Ca Correlation, Tambient = 23C"
 ylim <- c(-1.5, 1.5)
 stat.spearman.23 <- compare_means(AtThSpearmanR ~ Species, 
                                   data = dat_AFD_23,
@@ -614,17 +601,17 @@ p.spearman.23 <- plot_AFD(dat_AFD_23,
 print(p.spearman.23)
 ```
 
-#### Tc = 15C  
+#### Tambient = 15C  
 
 ```{r, message=FALSE}
 
 ylabel <- "Spearman's R"
-title <- "T vs Ca Correlation, Tc = 15C"
+title <- "T vs Ca Correlation, Tambient = 15C"
 ylim <- c(-1.5, 1.5)
 xlabel <- "Cultivation Temp"
 
-p.spearman.allTc <- plot_AFD_Speciesfacet(dat_AFD_allTc, 
-                                          dat_AFD_allTc$AtThSpearmanR, 
+p.spearman.allTc <- plot_AFD_Speciesfacet(dat_AFD_allTambient, 
+                                          dat_AFD_allTambient$AtThSpearmanR, 
                                           ylim,
                                           xlabel, 
                                           ylabel,
@@ -643,10 +630,10 @@ Statistics are the results of Wilcoxon signed-rank tests.
 #### Max Response  
 Only use values from traces from the pF PT stimulus, not the extended versions.  
 
-##### Tc = 23C
+##### Tambient = 23C
 ```{r}
 ylabel <- "Temperature (C)"
-title <- "Temp @ Max Response, Tc = 23C"
+title <- "Temp @ Max Response, Tambient = 23C"
 ylim <- c(15, 40)
 
 temp_dat <- dplyr::filter(dat_AFD_23, Stimulus == "pFPT")
@@ -667,10 +654,10 @@ p.max.23 <- plot_AFD(temp_dat,
 print(p.max.23)
 ```
 
-##### Tc = 15C
+##### Tambient = 15C
 ```{r}
 ylabel <- "Temperature (C)"
-title <- "Temp @ Max Response, Tc = 15C"
+title <- "Temp @ Max Response, Tambient = 15C"
 ylim <- c(10, 35)
 
 temp_dat <- dplyr::filter(dat_AFD_15, Stimulus == "pFPT")
@@ -694,10 +681,10 @@ print(p.max.15)
 
 #### Min Response
 
-##### Tc = 23C
+##### Tambient = 23C
 ```{r}
 ylabel <- "Temperature (C)"
-title <- "Temp @ Min Response, Tc = 23C"
+title <- "Temp @ Min Response, Tambient = 23C"
 ylim <- c(15, 40)
 
 stat.min.23 <- compare_means(MinimalTemperature ~ Species, 
@@ -716,10 +703,10 @@ p.min.23 <- plot_AFD(dat_AFD_23,
 print(p.min.23)
 ```
 
-##### Tc = 15C
+##### Tambient = 15C
 ```{r}
 ylabel <- "Temperature (C)"
-title <- "Temp @ Min Response, Tc = 15C"
+title <- "Temp @ Min Response, Tambient = 15C"
 ylim <- c(10, 35)
 
 stat.min.15 <- compare_means(MinimalTemperature ~ Species, 
@@ -753,267 +740,21 @@ ggarrange(
   ncol = 2,
   nrow = 4
 ) %>%
-  ggsave(filename ="AFDResponseNaturalisticStim.pdf",
+  ggsave(filename ="AFDResponseWarmingStim.pdf",
          device = cairo_pdf,
          width = 7,
          height = 8.4,
          path = "../Outputs/")
 ```
 
-
-## Rapid warming stimuli 
-Responses of *Ss*-AFD and *Ce*-AFD to thermal ramps based on those commonly used for *C. elegans* experiments (Colon-Ramos lab, in particular). In these cases, ramp speeds are generally 0.1C/s.  
-
-### Plot Templates  
-
-```{r}
-source("theme_Publication.R")
-plot_AFD <- function(dat, y, ylim, xlabel, ylabel, stat.test, stat.y.position, title = NULL){
-  ggplot(data = dat, mapping = aes(x = Species, y = y)) + 
-    stat_boxplot(geom = "errorbar", 
-                 width = 0.25,
-                 size = .5) +
-    geom_boxplot(width = 0.5,
-                 outlier.shape = NA,
-                 fatten = 1,
-                 key_glyph = "rect",
-                 alpha = 0.3,
-                 show.legend = F,
-                 aes(fill = Species)) +
-    geom_jitter(size = 1,
-                stroke = .75,
-                width = .2,
-                aes(color = Species, shape = Stimulus)) +
-    stat_pvalue_manual(stat.test, 
-                       y.position = stat.y.position,
-                       tip.length = 0,
-                       bracket.shorten = 0.2,
-                       label = 'p.signif') + 
-    scale_y_continuous(limits = ylim, 
-                       expand = expansion(add = 0)) +
-    scale_color_carto_d(palette = "Vivid") +
-    scale_fill_carto_d(palette = "Vivid") +
-    scale_shape_manual(values = c(23))  +
-    xlab(xlabel) +
-    ylab(ylabel) +
-    ggtitle(title) +
-    theme_Publication() +
-    theme(aspect.ratio = 2/1) 
-}
-
-plot_AFD_type <- function(dat, y, ylim, xlabel, ylabel, title = NULL){
-  ggplot(data = dat, mapping = aes(x = Type, y = y)) + 
-    stat_boxplot(geom = "errorbar",
-                 width = 0.25,
-                 size = .5) +
-    geom_boxplot(width = 0.5,
-                 outlier.shape = NA,
-                 fatten = 1,
-                 key_glyph = "rect",
-                 alpha = 0.3,
-                 show.legend = F,
-                 aes(fill = Species)) +
-    geom_jitter(size = 1,
-                stroke = .75,
-                width = .2,
-                aes(color = Species, shape = Stimulus)) +
-    facet_grid(. ~ Species)+
-    scale_y_continuous(limits = ylim, 
-                       expand = expansion(add = 0)) +
-    scale_color_carto_d(palette = "Vivid") +
-    scale_fill_carto_d(palette = "Vivid") +
-    scale_shape_manual(values = c(21:23))  +
-    xlab(xlabel) +
-    ylab(ylabel) +
-    ggtitle(title) +
-    theme_Publication() +
-    theme(aspect.ratio = 2/1) 
-}
-
-```
-
+## Cooling Stimuli 
+Responses of *Ss*-AFD and *Ce*-AFD to cooling thermal ramps based on those commonly used for *C. elegans* experiments (Colon-Ramos lab, in particular). In these cases, cooling ramp speeds are generally -0.1C/s.  
 
 ### Pearson Correlation
 
 Is the calcium response linearly correlated with changes in temperature. Correlation between calcium repsonses and temperature are analyzed across the following temperature ranges:
 
-* For Tc = 23, from 25 - 40C (R4)
-
-```{r, message=FALSE}
-
-ylabel <- "Pearson's R"
-title <- "T vs Ca Correlation, Tc = 23C, Stim = R4"
-ylim <- c(-1.5, 1.5)
-# stat.pearson.R4 <- compare_means(AboveThPearsonR ~ Species, 
-#                                  data = dat_AFD_R4,
-#                                  alternative = "two.sided")
-# 
-# p.pearson.R4 <- plot_AFD(dat_AFD_R4, 
-#                          dat_AFD_R4$AboveThPearsonR, 
-#                          ylim,
-#                          xlabel, 
-#                          ylabel,
-#                          stat.pearson.R4,
-#                          1.3,
-#                          title)
-
-p.pearson.R4 <- plot_AFD_type(dat_AFD_across, 
-                                 dat_AFD_across$AboveThPearsonR, 
-                                 ylim,
-                                 xlabel, 
-                                 ylabel,
-                                 title)
-
-print(p.pearson.R4)
-```
-
-### Temperature Threshold  
-
-The temperature threshold for each worm. Threshold is defined as the temperature at which point the caclium response deviates from baseline (F0) response by at least 3 * STD of baseline, for the duration of time it takes for the stimulus ramp to advance 0.25C. For the fast temperature ramps (.1C/s) plotted here, this time is therefore 2.5 seconds.  
-
-Baseline (F0) responses are defined as the calcium responses at the followin temperatures:  
-
-* For Tc = 23, F0 = 17C
-
-``` {r, message=FALSE}
-xlabel <- "Species"
-ylabel <- " Temperature (C)"
-title <- "Threshold Temperature, Tc = 23C, Stim = R4"
-ylim <- c(10, 40)
-
-p.thresh.across <- plot_AFD_type(dat_AFD_across, 
-                                 dat_AFD_across$Temperature, 
-                                 ylim,
-                                 xlabel, 
-                                 ylabel,
-                                 title)
-
-print(p.thresh.across)
-
-
-```
-
-### Tmax and Tmin responses   
-
-Plots showing the temperature that corresponds to the maximum and minimal calcium response for each trace. For now, just plotting Tc = 23.
-
-Statistics are the results of Wilcoxon signed-rank tests. 
-
-#### Max Response  
-
-```{r}
-ylabel <- "Temperature (C)"
-title <- "Temp @ Max Response, Tc = 23C, Stim = R4"
-ylim <- c(15, 45)
-
-stat.max.R4 <- compare_means(MaximalTemp ~ Species, 
-                             data = dat_AFD_R4,
-                             alternative = "two.sided")
-
-p.max.R4 <- plot_AFD(dat_AFD_R4, 
-                     dat_AFD_R4$MaximalTemp, 
-                     ylim,
-                     xlabel, 
-                     ylabel,
-                     stat.max.R4,
-                     43,
-                     title)
-
-print(p.max.R4)
-```
-
-#### Min Response
-
-```{r}
-ylabel <- "Temperature (C)"
-title <- "Temp @ Min Response, Tc = 23C"
-ylim <- c(15, 45)
-
-stat.min.R4 <- compare_means(MinimalTemperature ~ Species, 
-                             data = dat_AFD_R4,
-                             alternative = "two.sided")
-temp <- dat_AFD_R4 %>%
-  dplyr::mutate(TminAboveT0 = factor(TminAboveT0))
-p.min.R4 <- ggplot(data = temp, 
-                   mapping = aes(x = Species, 
-                                 y = dat_AFD_R4$MinimalTemperature)) + 
-    stat_boxplot(geom = "errorbar", 
-                 width = 0.25,
-                 size = .5) +
-    geom_boxplot(width = 0.5,
-                 outlier.shape = NA,
-                 fatten = 1,
-                 key_glyph = "rect",
-                 alpha = 0.3,
-                 show.legend = F,
-                 aes(fill = Species)) +
-    geom_jitter(size = 1,
-                stroke = .75,
-                width = .2,
-                aes(color = Species, shape = Stimulus)) +
-   facet_grid(. ~ TminAboveT0)+
-    # stat_pvalue_manual(stat.min.R4, 
-    #                    y.position = 43,
-    #                    tip.length = 0,
-    #                    bracket.shorten = 0.2,
-    #                    label = 'p.signif') + 
-    scale_y_continuous(limits = ylim, 
-                       expand = expansion(add = 0)) +
-    scale_color_carto_d(palette = "Vivid") +
-    scale_fill_carto_d(palette = "Vivid") +
-    scale_shape_manual(values = c(23))  +
-    xlab(xlabel) +
-    ylab(ylabel) +
-    ggtitle(title) +
-    theme_Publication() +
-    theme(aspect.ratio = 2/1) 
-
-
-print(p.min.R4)
-```
-
-### Is Tmin above T0?
-```{r}
-
-xlabel <- "Stimulus"
-ylabel <- "Proportion of Worms"
-title <- "Deviation of Calcium Trace from T0"
-
-temp_dat <- dat_AFD_across %>%
-  dplyr::mutate(Dir_Tmin = factor(case_when(
-    TminAboveT0 > 0 ~ "Above",
-    TminAboveT0 == 0 ~ "Below"),
-    levels = c("Above", "Below"))) %>%
-  group_by(Species,Tc, Type, Dir_Tmin)
-
-# Counts of various conditions
-dplyr::count(temp_dat, TminAboveT0)
-
-p.bar.TminAboveT0 <- ggplot(data = temp_dat, mapping = aes(x = Type)) + 
-  geom_bar(aes(fill = Dir_Tmin), position = "fill") +
-  scale_color_manual(values = c("Below" = "#5F6369", 
-                                "Above" = "coral4"),
-                     aesthetics = c("colour", "fill")) +
-  facet_grid(. ~ Species)+
-  xlab(xlabel) +
-  ylab(ylabel) +
-  ggtitle(title) +
-  theme_Publication() +
-  theme(aspect.ratio = 2/1) 
-
-print(p.bar.TminAboveT0)
-
-```
-
-
-## Negative Stimuli 
-Responses of *Ss*-AFD and *Ce*-AFD to negative thermal ramps based on those commonly used for *C. elegans* experiments (Colon-Ramos lab, in particular). In these cases, cooling ramp speeds are generally -0.1C/s.  
-
-### Pearson Correlation
-
-Is the calcium response linearly correlated with changes in temperature. Correlation between calcium repsonses and temperature are analyzed across the following temperature ranges:
-
-* For Tc = 23, from 13 - 22C (NT)
+* For Tambient = 23, from 13 - 22C (NT)
 
 Statistics are the results of Wilcoxon signed-rank tests. 
 
@@ -1023,7 +764,7 @@ dat_AFD_NT <- dat_AFD %>%
   dplyr::filter(Stimulus == "NT")
 
 ylabel <- "Pearson's R"
-title <- "T vs Ca Correlation, Tc = 23C, Stim = NT"
+title <- "T vs Ca Correlation, Tambient = 23C, Stim = NT"
 ylim <- c(-1.5, 1.5)
 stat.pearson.NT <- compare_means(AboveThPearsonR ~ Species, 
                                  data = dat_AFD_NT,
@@ -1041,19 +782,61 @@ p.pearson.NT <- plot_AFD(dat_AFD_NT,
 print(p.pearson.NT)
 ```
 
+### Response Adaptation
+```{r, message=FALSE}
+
+dat_AFD_NT_adapt <- dat_AFD %>%
+  dplyr::filter(Stimulus == "NT") %>%
+  dplyr::ungroup() %>%
+  dplyr::select(Species,Tminfirst5, Tminlast5,F0last5) %>%
+  pivot_longer(cols = !Species, names_to = 'AnalysisBin', values_to = 'Response') %>%
+  dplyr::group_by(Species, AnalysisBin)
+
+ylabel <- "Response Size"
+title <- "Response during cooling ramp"
+ylim <- c(-50, 50)
+
+p.response.NT <- dat_AFD_NT_adapt %>%
+  ggplot(mapping = aes(x = AnalysisBin, y = Response)) + 
+    stat_boxplot(geom = "errorbar", 
+                 width = 0.25,
+                 size = .5) +
+    geom_boxplot(width = 0.5,
+                 outlier.shape = NA,
+                 fatten = 1,
+                 key_glyph = "rect",
+                 alpha = 0.3,
+                 show.legend = F,
+                 aes(fill = Species)) +
+    geom_jitter(size = 1,
+                stroke = .75,
+                width = .2,
+                aes(color = Species, shape = AnalysisBin)) +
+    facet_grid(. ~ Species) +
+    scale_y_continuous(limits = ylim, 
+                       expand = expansion(add = 0)) +
+    scale_color_carto_d(palette = "Vivid") +
+    scale_fill_carto_d(palette = "Vivid") +
+    scale_shape_manual(values = c(21:23))  +
+    xlab(xlabel) +
+    ylab(ylabel) +
+    ggtitle(title) +
+    theme_Publication() +
+    theme(aspect.ratio = 2/1) 
+  
+
+print(p.response.NT)
+```
+
 ### Group and Save AFD Plots
 ```{r}
 ggarrange(
-  p.thresh.across,
-  p.pearson.R4,
-  p.bar.TminAboveT0,
-  p.min.R4,
-  p.max.R4,
   p.pearson.NT,
+  p.response.NT,
   ncol = 2,
   nrow = 3
 ) %>%
-  ggsave(filename ="AFDResponseRapidWarmingAndCoolingStim.pdf",
+  ggsave(filename ="AFDResponseCoolingStim.pdf",
          device = cairo_pdf,
          width = 7,
          height = 6.3,
@@ -1153,7 +936,7 @@ if (is_empty(dat_adapt_file)){
 dat_AFD_adaptation <- read_excel(dat_adapt_file, sheet = 1) %>%
   dplyr::mutate(Species = as_factor(Species)) %>%
   dplyr::mutate(Stimulus = factor(Stimulus, levels = c("Reversal", "pFPT", "pFPTe", "NT", "FlincG3"))) %>%
-  dplyr::mutate(Tc = factor(Tc, levels = c(23, 15))) %>%
+  dplyr::mutate(Tambient = factor(Tambient, levels = c(23, 15))) %>%
   dplyr::mutate(UID = as_factor(UID)) %>%
   pivot_longer(cols = c(AdaptWindowEarly, AdaptWindowLate),
                names_to = "Bin",
@@ -1170,22 +953,21 @@ dat_AFD_adaptation <- read_excel(dat_adapt_file, sheet = 1) %>%
     AdaptWindowEarly_Cat < 0 ~ "Sig Diff",
     AdaptWindowEarly_Cat == 0 ~ "Not Sig"),
     levels = c("Sig Diff", "Not Sig"))) %>%
-  group_by(Species,Tc, Stimulus, UID)
+  group_by(Species,Tambient, Stimulus, UID)
 
 ```
 
-## Tmax
-This should reveal any adaptation in the response once temperature is holding at Tmax (for variable lengths of time).
+## Steady-state
+This should reveal any adaptation in the response once temperature is holding at the steady state temperature (for variable lengths of time).
 
-### Calcium Response Across T(max)
+### Neural Response Across T(max)
 ```{r}
 xlabel <- "TimingWindow"
-ylabel <- "Median CaResponse, normalized to Tc"
-title <- "Calcium Response as a function of time during T(max)"
+ylabel <- "Median Response, normalized to Tambient"
+title <- "Neural Response as a function of time during stead-state temp"
 ylim <- c(-50, 50)
 
 p.Tmax.adapt <- dat_AFD_adaptation %>%
-  dplyr::filter(Stimulus != "NT" & Stimulus != "FlincG3" & Species != "Ce") %>%
   ggplot(mapping = aes(x = Bin, y = CaResponse)) + 
   stat_boxplot(geom = "errorbar", 
                width = 0.25,
@@ -1206,7 +988,7 @@ p.Tmax.adapt <- dat_AFD_adaptation %>%
                      expand = expansion(add = 0)) +
   scale_color_carto_d(palette = "Vivid") +
   scale_fill_carto_d(palette = "Vivid") +
-  scale_shape_manual(values = c(21:23))  +
+  scale_shape_manual(values = c(21:23,21,21))  +
   xlab(xlabel) +
   ylab(ylabel) +
   ggtitle(title) +
@@ -1216,84 +998,6 @@ p.Tmax.adapt <- dat_AFD_adaptation %>%
 print(p.Tmax.adapt)
 ```
 
-### cGMP Response Across T(max)
-```{r}
-xlabel <- "TimingWindow"
-ylabel <- "Median FlincG3Response, normalized to Tc"
-title <- "cGMP Response as a function of time during T(max)"
-ylim <- c(-50, 50)
-
-p.Tmax.FlincG3adapt <- dat_AFD_adaptation %>%
-  dplyr::filter(Stimulus == "FlincG3") %>%
-  ggplot(mapping = aes(x = Bin, y = CaResponse)) + 
-  stat_boxplot(geom = "errorbar", 
-               width = 0.25,
-               size = .5) +
-  geom_boxplot(width = 0.5,
-               outlier.shape = NA,
-               fatten = 1,
-               key_glyph = "rect",
-               alpha = 0.3,
-               show.legend = F,
-               aes(fill = Bin)) +
-  geom_jitter(size = 1,
-              stroke = .75,
-              width = .2,
-              aes(color = Bin, shape = Stimulus)) +
-  facet_grid(. ~ Stimulus)+
-  scale_y_continuous(limits = ylim, 
-                     expand = expansion(add = 0)) +
-  scale_color_carto_d(palette = "Vivid") +
-  scale_fill_carto_d(palette = "Vivid") +
-  scale_shape_manual(values = c(21))  +
-  xlab(xlabel) +
-  ylab(ylabel) +
-  ggtitle(title) +
-  theme_Publication() +
-  theme(aspect.ratio = 2/1) 
-
-print(p.Tmax.FlincG3adapt)
-```
-
-### Calcium Response Ss vs Ce at T(max)
-```{r}
-xlabel <- "TimingWindow"
-ylabel <- "Median CaResponse, normalized to Tc"
-title <- "Ce vs Ss calcium response adaptation at Tmax = 26C"
-ylim <- c(-50, 200)
-
-p.Tmax.adapt_species <- dat_AFD_adaptation %>%
-  dplyr::filter(Stimulus == "pFPT") %>%
-  dplyr::mutate(Species = relevel(Species, "Ce")) %>%
-  ggplot(mapping = aes(x = Bin, y = CaResponse)) + 
-  stat_boxplot(geom = "errorbar", 
-               width = 0.25,
-               size = .5) +
-  geom_boxplot(width = 0.5,
-               outlier.shape = NA,
-               fatten = 1,
-               key_glyph = "rect",
-               alpha = 0.3,
-               show.legend = F,
-               aes(fill = Bin)) +
-  geom_jitter(size = 1,
-              stroke = .75,
-              width = .2,
-              aes(color = Bin, shape = Stimulus)) +
-  facet_grid(. ~ Species)+
-  scale_y_continuous(limits = ylim, 
-                     expand = expansion(add = 0)) +
-  scale_color_carto_d(palette = "Vivid") +
-  scale_fill_carto_d(palette = "Vivid") +
-  scale_shape_manual(values = c(21:23))  +
-  xlab(xlabel) +
-  ylab(ylabel) +
-  ggtitle(title) +
-  theme_Publication() +
-  theme(aspect.ratio = 2/1) 
-
-print(p.Tmax.adapt_species)
-```
 
 ### Categorical
 Plotting the proportion of traces belonging to one of two categories: those in which the response is significantly different from the response at the cultivation/holding temperature, and those where the response is not significantly different.  
@@ -1307,7 +1011,6 @@ title <- "Deviation of Calcium Trace from Holding Response"
 
 p.bar.adapt.late <- dat_AFD_adaptation %>%
   dplyr::filter(Stimulus != "NT" & Stimulus != "FlincG3") %>%
-  dplyr::filter(Species != "Ce") %>%
   ggplot(mapping = aes(x = Stimulus)) + 
   geom_bar(aes(fill = Dir_late), position = "fill") +
   scale_color_manual(values = c("Not Sig" = "#5F6369", 
@@ -1323,64 +1026,6 @@ print(p.bar.adapt.late)
 
 ```
 
-## Tmin
-This should reveal any adaptation in the response once temperature is holding at Tmin (for variable lengths of time). This is for thermal stimuli approximating negative thermotaxis.
-
-### Calcium Response
-```{r}
-xlabel <- "TimingWindow"
-ylabel <- "Median CaResponse, normalized to Tc"
-title <- "Calcium Response as a function of time during T(min)"
-ylim <- c(-50, 50)
-
-p.Tmin.adapt <- dat_AFD_adaptation %>%
-  dplyr::filter(Stimulus == "NT") %>%
-  dplyr::mutate(Species = relevel(Species, "Ce")) %>%
-  ggplot(mapping = aes(x = Bin, y = CaResponse)) + 
-  stat_boxplot(geom = "errorbar", 
-               width = 0.25,
-               size = .5) +
-  geom_boxplot(width = 0.5,
-               outlier.shape = NA,
-               fatten = 1,
-               key_glyph = "rect",
-               alpha = 0.3,
-               show.legend = F,
-               aes(fill = Bin)) +
-  geom_jitter(size = 1,
-              stroke = .75,
-              width = .2,
-              aes(color = Bin, shape = Stimulus)) +
-  facet_grid(. ~ Species)+
-  scale_y_continuous(limits = ylim, 
-                     expand = expansion(add = 0)) +
-  scale_color_carto_d(palette = "Vivid") +
-  scale_fill_carto_d(palette = "Vivid") +
-  scale_shape_manual(values = c(21:23))  +
-  xlab(xlabel) +
-  ylab(ylabel) +
-  ggtitle(title) +
-  theme_Publication() +
-  theme(aspect.ratio = 1.3/1) 
-
-print(p.Tmin.adapt)
-```
-
-Compare responses of Ss-AFD (Tc = 23C) at 13C (early window) versus Ss-AFD (Tc = 15C) at 22C (early window). This is asking if there warming-mediated hyperpolarization and cooling-mediated hyperpolarizations are the same initial magnitude, with only the warming-mediated hyperpolarization showing rapid adaptation. 
-```{r}
-temp <-  dplyr::filter(dat_AFD_adaptation, Stimulus == "NT" & Species == "Ss" & Bin == "Early") %>%
-  dplyr::ungroup() %>%
-  dplyr::select(Stimulus,CaResponse) 
-
-temp <- dplyr::filter(dat_AFD_adaptation, Stimulus == "Reversal" & Species == "Ss" & Bin == "Early") %>%
-  dplyr::ungroup() %>%
-  dplyr::select(Stimulus,CaResponse) %>%
-  dplyr::bind_rows(temp) %>%
-  dplyr::group_by(Stimulus)
-
-compare_means(CaResponse ~ Stimulus,
-              data = temp)
-```
 
 ## Group and Save Plots
 ```{r}
@@ -1389,9 +1034,6 @@ ggarrange(
   p.reversals.All,
   p.bar.adapt.late,
   p.Tmax.adapt,
-  p.Tmax.adapt_species,
-  p.Tmin.adapt,
-  p.Tmax.FlincG3adapt,
   ncol = 2,
   nrow = 4
 ) %>%
