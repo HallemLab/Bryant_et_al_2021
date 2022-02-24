@@ -43,12 +43,12 @@ if assaytype ~= 2
     % Spearman's or Pearson's correlation using the 3rd input variable.
     % 1 = Pearson's correlation, for quantifying linear correlation
     % 2 = Spearman's correlation, for quantifying monotonic correlations
-    set(0,'DefaultFigureVisible','off');
-    [Results.rsq.AtTh, Results.Corr.AtTh] = TCI_ResponseFitting(Temps.AtTh, CaResponse.AtTh,2,strcat(n,'_AtTh_'));
-    [Results.rsq.AboveThPear, Results.Corr.AboveThPear] = TCI_ResponseFitting(Temps.AboveTh, CaResponse.AboveTh,1,strcat(n,'_AboveThPear_'));
-    [Results.rsq.AboveThSpear, Results.Corr.AboveThSpear] = TCI_ResponseFitting(Temps.AboveTh, CaResponse.AboveTh,2,strcat(n,'_AboveThSpear_'));
     
-    set(0,'DefaultFigureVisible','on');
+    [Results.rsq.AtTh, Results.Corr.AtTh] = TCI_ResponseFitting(Temps.AtTh, CaResponse.AtTh,2);
+    [Results.rsq.AboveThPear, Results.Corr.AboveThPear] = TCI_ResponseFitting(Temps.AboveTh, CaResponse.AboveTh,1);
+    [Results.rsq.AboveThSpear, Results.Corr.AboveThSpear] = TCI_ResponseFitting(Temps.AboveTh, CaResponse.AboveTh,2);
+    [~, Results.Corr_Instant] = TCI_ResponseFitting(Temps.subset, CaResponse.subset, 3, Stim);
+    
     
 else
     %% Generate data subsets for negative thermotaxis ramps
@@ -81,7 +81,7 @@ else
     set(0,'DefaultFigureVisible','on');
 end
 
-%% Calculate Temperature at which point Experimental trace deviates from control trace by 3*STD of control for at least N seconds
+%% Calculate Temperature at which point trace deviates from F0 response by 3*STD of F0 response for time it takes to change 0.25C
 % The amount of time the absolute value of the trace should be above threshold should reflect 0.25 degree C
 % Calculate based on ramp rate such that:
 % If ramp rate is 0.025C/s, the time it would take to increase 0.25C is 10 seconds, which equals 20 frames.
@@ -198,23 +198,34 @@ for i = 1:n_expt
     Results.MaxTempResponse(i) = median(CaResponse.subset(find(Temps.subset(:,i)>=Stim.max-.2 & Temps.subset(:,i)<=Stim.max+.2),i));
 end
 
-%% Get response during first 15 seconds of Stim.max
+%% Measure degree of steady state adaptation, then normalize to Response at Tambient/holding/cultivation 
 for i = 1:n_expt
+    % For warming temperature ramps, compare first 15 seconds of Stim.max
+    % versus final 15. This second locates the temperature bins. See next
+    % section for normalization relative to Tambient.
+    
     if assaytype ~=2
         temp = (CaResponse.full(find(Temps.full(:,i)>=Stim.max, 1,'first'):find(Temps.full(:,i)>=Stim.max-0.1, 1,'last'),i));
-    
-        Results.AdaptBins(1,i) = median(temp(1:15));
-        Results.AdaptBins(2,i) = median(temp(31:end));
+        Results.AdaptBins(1,i) = median(temp(1:30));
+        Results.AdaptBins(2,i) = median(temp(size(temp,1)-30:end));
     else
-        temp = (CaResponse.full(find(Temps.full(:,i)<=Stim.min, 1,'first'):find(Temps.full(:,i)<=Stim.min+0.1, 1,'last'),i));
-        Results.AdaptBins(1,i) = median(temp(1:15));
-        Results.AdaptBins(2,i) = median(temp(31:end));
+        % For cooling ramps, compare first 15 seconds versus final 15 sec
+        temp = (CaResponse.full(find(Temps.full(:,i)<=Stim.min+0.1, 1,'first'):find(Temps.full(:,i)<=Stim.min+0.1, 1,'last'),i));
+        Results.AdaptBins(1,i) = median(temp(1:30));
+        Results.AdaptBins(2,i) = median(temp(size(temp,1)-30:end));
+        % For cooling ramps, compare first and last 5 seconds at stim.min
+        Results.AdaptBins(3,i) = median(temp(1:10));
+        Results.AdaptBins(4,i) = median(temp(size(temp,1)-10:end));
+        % Also last 5 seconds before cooling ramp 
+        temp = (CaResponse.full(1:find(Temps.full(:,i)<=(Stim.F0-0.5), 1,'first'),i));
+        ttemp = (Temps.full(1:find(Temps.full(:,i)<=(Stim.F0-0.5), 1,'first'),i));
+        temp = temp(1:find(ttemp>=(Stim.F0-0.1),1,'last'));
+        Results.AdaptBins(5,i) = median(temp(size(temp,1)-10:end));
     
     end   
 end
 
-%% Categorize Tmax responses
-        % as greater, lesser, or not different than the holding response
+% Normalize relative to Response at Tambient
 temp = Results.AdaptBins;
      if assaytype ~=2 
         if assaytype ~= 4
@@ -226,7 +237,7 @@ temp = Results.AdaptBins;
                 threshold(i) = (3*abs(stdbase(i))); %+ abs(base(i));    
             end
             
-            % Renormalized CaResponse.Tmax and Early/Late tmax quantifications relative to the mean Tc response, aka
+            % Renormalized CaResponse.Tmax trace and Early/Late tmax quantifications relative to the mean Tambient response, aka
             % the "base" here
             CaResponse.Tmax_adjusted = CaResponse.Tmax-base;
             Results.AdaptBins(1,:) = Results.AdaptBins(1,:) - base;
@@ -241,7 +252,7 @@ temp = Results.AdaptBins;
             below = (temp(1,:) <= -threshold)*-1;
             Results.TmaxEarly_Cat = above + below;
             
-            % Categorize late Tmax response
+            % Categorize last 15 seconds of Tmax response
             above = (temp(2,:) >= threshold);
             below = (temp(2,:) <= -threshold)*-1;
             Results.TmaxLate_Cat = above + below; 
@@ -254,18 +265,19 @@ temp = Results.AdaptBins;
                 threshold(i) = (3*abs(stdbase(i))); %+ abs(base(i));    
             end
             
-            % Renormalized CaResponse.Tmax and Early/Late tmax quantifications relative to the mean Tc response, aka
-            % the "base" here
+            % Renormalized CaResponse.Tmin trace and Early/Late tmin quantifications relative to the mean Tambient response, aka
+            % the "base" here. Do *not* normalize other quanitfications of
+            % cooling ramp.
             CaResponse.Tmin_adjusted = CaResponse.Tmin-base;
             Results.AdaptBins(1,:) = Results.AdaptBins(1,:) - base;
             Results.AdaptBins(2,:) = Results.AdaptBins(2,:) - base;
             
-            % Categorize first 15 seconds of Tmax response
+            % Categorize first 15 seconds of Tmin response
             above = (temp(1,:) >= threshold);
             below = (temp(1,:) <= -threshold)*-1;
             Results.TminEarly_Cat = above + below;
             
-            % Categorize late Tmax response
+            % Categorize last 15 seconds of Tmin response
             above = (temp(2,:) >= threshold);
             below = (temp(2,:) <= -threshold)*-1;
             Results.TminLate_Cat = above + below;

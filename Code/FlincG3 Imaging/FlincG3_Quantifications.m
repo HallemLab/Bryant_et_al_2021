@@ -17,71 +17,40 @@ global assaytype
 
 %Response.nsub = Response.subset./max(Response.full);
 
-if assaytype ~= 2
-    %% Generate data subsets for positive thermotaxis ramps
-    [Response.AtTh, Temps.AtTh, ...
-        Response.AboveTh, Temps.AboveTh, ...
-        Response.Tmax, Temps.Tmax] = deal(NaN(size(Temps.subset)));
+%% Generate data subsets for positive thermotaxis ramps
+[Response.AtTh, Temps.AtTh, ...
+    Response.AboveTh, Temps.AboveTh, ...
+    Response.Tmax, Temps.Tmax] = deal(NaN(size(Temps.subset)));
+
+for i = 1:size(Temps.subset,2)
+    % Temperature bin of Near T(holding)
+    Temps.AtTh(1:size(find(Temps.subset(:,i)>=Stim.NearTh(1) & Temps.subset(:,i)<=Stim.NearTh(2)),1),i) = Temps.subset(find(Temps.subset(:,i)>=Stim.NearTh(1) & Temps.subset(:,i)<=Stim.NearTh(2)),i);
+    Response.AtTh(1:size(find(Temps.subset(:,i)>=Stim.NearTh(1) & Temps.subset(:,i)<=Stim.NearTh(2)),1),i) = Response.subset(find(Temps.subset(:,i)>=Stim.NearTh(1) & Temps.subset(:,i)<=Stim.NearTh(2)),i);
     
-    for i = 1:size(Temps.subset,2)
-        % Temperature bin of Near T(holding)
-        Temps.AtTh(1:size(find(Temps.subset(:,i)>=Stim.NearTh(1) & Temps.subset(:,i)<=Stim.NearTh(2)),1),i) = Temps.subset(find(Temps.subset(:,i)>=Stim.NearTh(1) & Temps.subset(:,i)<=Stim.NearTh(2)),i);
-        Response.AtTh(1:size(find(Temps.subset(:,i)>=Stim.NearTh(1) & Temps.subset(:,i)<=Stim.NearTh(2)),1),i) = Response.subset(find(Temps.subset(:,i)>=Stim.NearTh(1) & Temps.subset(:,i)<=Stim.NearTh(2)),i);
-        
-        % Temperature bin of above T(holding)
-        Temps.AboveTh(1:size(find(Temps.subset(:,i)>=Stim.AboveTh(1)),1),i) = Temps.subset(find(Temps.subset(:,i)>=Stim.AboveTh(1)),i);
-        Response.AboveTh(1:size(find(Temps.subset(:,i)>=Stim.AboveTh(1)),1),i) = Response.subset(find(Temps.subset(:,i)>=Stim.AboveTh(1)),i);
-        
-        % Temperature bin of near T(max)
-        Temps.Tmax(1:size(find(Temps.full(:,i)>=Stim.max(1)-3),1),i) = Temps.full(find(Temps.full(:,i)>=Stim.max(1)-3),i);
-        Response.Tmax(1:size(find(Temps.full(:,i)>=Stim.max(1)-3),1),i) = Response.full(find(Temps.full(:,i)>=Stim.max(1)-3),i);
-        
-    end
+    % Temperature bin of above T(holding)
+    Temps.AboveTh(1:size(find(Temps.subset(:,i)>=Stim.AboveTh(1)),1),i) = Temps.subset(find(Temps.subset(:,i)>=Stim.AboveTh(1)),i);
+    Response.AboveTh(1:size(find(Temps.subset(:,i)>=Stim.AboveTh(1)),1),i) = Response.subset(find(Temps.subset(:,i)>=Stim.AboveTh(1)),i);
     
-    %% Calculate and plot linear regression of different temperature windows
-    % When calling FlincG3_ResponseFitting.m, users choose whether to calculate
-    % Spearman's or Pearson's correlation using the 3rd input variable.
-    % 1 = Pearson's correlation, for quantifying linear correlation
-    % 2 = Spearman's correlation, for quantifying monotonic correlations
-    set(0,'DefaultFigureVisible','off');
-    [Results.rsq.AtTh, Results.Corr.AtTh] = FlincG3_ResponseFitting(Temps.AtTh, Response.AtTh,2,strcat(n,'_AtTh_'));
-    [Results.rsq.AboveThPear, Results.Corr.AboveThPear] = FlincG3_ResponseFitting(Temps.AboveTh, Response.AboveTh,1,strcat(n,'_AboveThPear_'));
-    [Results.rsq.AboveThSpear, Results.Corr.AboveThSpear] = FlincG3_ResponseFitting(Temps.AboveTh, Response.AboveTh,2,strcat(n,'_AboveThSpear_'));
+    % Temperature bin of near T(max)
+    Temps.Tmax(1:size(find(Temps.full(:,i)>=Stim.max(1)-3),1),i) = Temps.full(find(Temps.full(:,i)>=Stim.max(1)-3),i);
+    Response.Tmax(1:size(find(Temps.full(:,i)>=Stim.max(1)-3),1),i) = Response.full(find(Temps.full(:,i)>=Stim.max(1)-3),i);
     
-    set(0,'DefaultFigureVisible','on');
-    
-else
-    %% Generate data subsets for negative thermotaxis ramps
-    [Response.BelowTh, Temps.BelowTh,...
-        Response.Tmin, Temps.Tmin] = deal(NaN(size(Temps.subset)));
-    
-    for i = 1:size(Temps.subset,2)
-        % Temperature bin of descending portion
-        Temps.BelowTh(1:size(find(Temps.subset(:,i)<=(Stim.BelowTh(1)+0.2) & Temps.subset(:,i)>= (Stim.BelowTh(2)-0.2)),1),i) = Temps.subset(find(Temps.subset(:,i)<=(Stim.BelowTh(1)+0.2) & Temps.subset(:,i)>= (Stim.BelowTh(2)-0.2)),i);
-        Response.BelowTh(1:size(find(Temps.subset(:,i)<=(Stim.BelowTh(1)+0.2) & Temps.subset(:,i)>= (Stim.BelowTh(2)-0.2)),1),i) = Response.subset(find(Temps.subset(:,i)<=(Stim.BelowTh(1)+0.2) & Temps.subset(:,i)>= (Stim.BelowTh(2)-0.2)),i);
-        trim(i) = find(Temps.BelowTh(:,i)<=(Stim.BelowTh(2)+.2),1,'last');
-        Temps.BelowTh(trim(i)+1:end,i)=NaN;
-        Response.BelowTh(trim(i)+1:end,i)=NaN;
-        
-        
-         % Temperature bin of near T(max)
-        Temps.Tmin(1:size(find(Temps.full(:,i)<=Stim.min(1)+3),1),i) = Temps.full(find(Temps.full(:,i)<=Stim.min(1)+3),i);
-        Response.Tmin(1:size(find(Temps.full(:,i)<=Stim.min(1)+3),1),i) = Response.full(find(Temps.full(:,i)<=Stim.min(1)+3),i);
-        
-    end
-    
-    
-    %% Calculate and plot linear regression of different temperature windows
-    % When calling FlincG3_ResponseFitting.m, users choose whether to calculate
-    % Spearman's or Pearson's correlation using the 3rd input variable.
-    % 1 = Pearson's correlation, for quantifying linear correlation
-    % 2 = Spearman's correlation, for quantifying monotonic correlations
-    set(0,'DefaultFigureVisible','off');
-    [Results.rsq.BelowTh, Results.Corr.BelowTh] = FlincG3_ResponseFitting(Temps.BelowTh, Response.BelowTh,1,strcat(n,'_BelowTh_'));
-    set(0,'DefaultFigureVisible','on');
 end
 
-%% Calculate Temperature at which point Experimental trace deviates from control trace by 3*STD of control for at least N seconds
+%% Calculate and plot linear regression of different temperature windows
+% When calling FlincG3_ResponseFitting.m, users choose whether to calculate
+% Spearman's or Pearson's correlation using the 3rd input variable.
+% 1 = Pearson's correlation, for quantifying linear correlation
+% 2 = Spearman's correlation, for quantifying monotonic correlations
+set(0,'DefaultFigureVisible','off');
+[Results.rsq.AtTh, Results.Corr.AtTh] = FlincG3_ResponseFitting(Temps.AtTh, Response.AtTh,2,strcat(n,'_AtTh_'));
+[Results.rsq.AboveThPear, Results.Corr.AboveThPear] = FlincG3_ResponseFitting(Temps.AboveTh, Response.AboveTh,1,strcat(n,'_AboveThPear_'));
+[Results.rsq.AboveThSpear, Results.Corr.AboveThSpear] = FlincG3_ResponseFitting(Temps.AboveTh, Response.AboveTh,2,strcat(n,'_AboveThSpear_'));
+
+set(0,'DefaultFigureVisible','on');
+
+
+%% Calculate Temperature at which point trace deviates from F0 response by 3*STD of F0 response for time it takes to change 0.25C
 % The amount of time the absolute value of the trace should be above threshold should reflect 0.25 degree C
 % Calculate based on ramp rate such that:
 % If ramp rate is 0.025C/s, the time it would take to increase 0.25C is 10 seconds, which equals 20 frames.
@@ -97,28 +66,15 @@ disp(strcat('number of recordings: ',num2str(n_expt)));
 
 N = 0.25/time.rampspeed*2; % required number of consecutive numbers following a first one (with a 500 ms frame rate, this is N/2 seconds)
 
-if assaytype ~= 2
-    % RUN THIS FOR EACH INDIVIDUAL EXPERIMENTAL TRACE
-    II = arrayfun(@(x)(find(Response.subset(:,x)>=threshold(x) | Response.subset(:,x)<=-threshold(x))), [1:n_expt], 'UniformOutput', false);
-    kk = arrayfun(@(x)([true;diff(II{x})~=1]), [1:n_expt], 'UniformOutput', false);
-    ss = arrayfun(@(x)(cumsum(kk{x})), [1:n_expt], 'UniformOutput', false);
-    xx = arrayfun(@(x)(histc(ss{x},1:ss{x}(end))), [1:n_expt], 'UniformOutput', false);
-    idxx = arrayfun(@(x)(find(kk{x})), [1:n_expt], 'UniformOutput', false);
-    outt = arrayfun(@(x)(II{x}(idxx{x}(xx{x} >= N))), [1:n_expt], 'UniformOutput', false);
-    
-else
-    % RUN THIS FOR EACH INDIVIDUAL EXPERIMENTAL TRACE
-    % Only look for threshold during the negative temp ramp
-    II = arrayfun(@(x)(find(Response.subset(time.soak:end,x)>=threshold(x) | Response.subset(time.soak:end,x)<=-threshold(x))), [1:n_expt], 'UniformOutput', false);
-    kk = arrayfun(@(x)([true;diff(II{x})~=1]), [1:n_expt], 'UniformOutput', false);
-    ss = arrayfun(@(x)(cumsum(kk{x})), [1:n_expt], 'UniformOutput', false);
-    xx = arrayfun(@(x)(histc(ss{x},1:ss{x}(end))), [1:n_expt], 'UniformOutput', false);
-    idxx = arrayfun(@(x)(find(kk{x})), [1:n_expt], 'UniformOutput', false);
-    outt = arrayfun(@(x)(II{x}(idxx{x}(xx{x} >= N))), [1:n_expt], 'UniformOutput', false);
-    outt = arrayfun(@(x)(outt{x}+time.soak), [1:n_expt], 'UniformOutput', false);
-end
+% RUN THIS FOR EACH INDIVIDUAL EXPERIMENTAL TRACE
+II = arrayfun(@(x)(find(Response.subset(:,x)>=threshold(x) | Response.subset(:,x)<=-threshold(x))), [1:n_expt], 'UniformOutput', false);
+kk = arrayfun(@(x)([true;diff(II{x})~=1]), [1:n_expt], 'UniformOutput', false);
+ss = arrayfun(@(x)(cumsum(kk{x})), [1:n_expt], 'UniformOutput', false);
+xx = arrayfun(@(x)(histc(ss{x},1:ss{x}(end))), [1:n_expt], 'UniformOutput', false);
+idxx = arrayfun(@(x)(find(kk{x})), [1:n_expt], 'UniformOutput', false);
+outt = arrayfun(@(x)(II{x}(idxx{x}(xx{x} >= N))), [1:n_expt], 'UniformOutput', false);
 
-% Find Calcium Response at Temperature Thresh
+% Find Response at Temperature Thresh
 for x = 1:n_expt
     
     if ~isempty(outt{x})
@@ -198,78 +154,45 @@ for i = 1:n_expt
     Results.MaxTempResponse(i) = median(Response.subset(find(Temps.subset(:,i)>=Stim.max-.2 & Temps.subset(:,i)<=Stim.max+.2),i));
 end
 
-%% Get response during first 15 seconds of Stim.max
+%% Measure degree of steady state adaptation, then normalize to Response at Tambient/holding/cultivation
+% For warming temperature ramps, compare first 15 seconds of Stim.max
+% versus final 15. This second locates the temperature bins. See next
+% section for normalization relative to Tambient.
 for i = 1:n_expt
-    if assaytype ~=2
-        temp = (Response.full(find(Temps.full(:,i)>=Stim.max, 1,'first'):find(Temps.full(:,i)>=Stim.max-0.1, 1,'last'),i));
+    temp = (Response.full(find(Temps.full(:,i)>=Stim.max, 1,'first'):find(Temps.full(:,i)>=Stim.max-0.1, 1,'last'),i));
     
-        Results.AdaptBins(1,i) = median(temp(1:20));
-        Results.AdaptBins(2,i) = median(temp(61:end));
-    else
-        temp = (Response.full(find(Temps.full(:,i)<=Stim.min, 1,'first'):find(Temps.full(:,i)<=Stim.min+0.1, 1,'last'),i));
-        Results.AdaptBins(1,i) = median(temp(1:20));
-        Results.AdaptBins(2,i) = median(temp(61:end));
-    
-    end   
+    Results.AdaptBins(1,i) = median(temp(1:30));
+    Results.AdaptBins(2,i) = median(temp(size(temp,1)-30:end));
 end
 
 %% Categorize Tmax responses
-        % as greater, lesser, or not different than the holding response
+% as greater, lesser, or not different than the holding response
 temp = Results.AdaptBins;
-     if assaytype ~=2 
-        if assaytype ~= 4
-            % If this is a stimulus where holding response is higher than
-            % F0, calculate the threshold from the prestim period
-            for i = 1:size(Temps.prestim,2)
-                base(i)=mean(Response.prestim(find(Temps.prestim(:,i)<=(Stim.holding+.2) & Temps.prestim(:,i) >= (Stim.holding - 0.2)),i));
-                stdbase(i)=std(Response.prestim(find(Temps.prestim(:,i)<=(Stim.holding+.2) & Temps.prestim(:,i) >= (Stim.holding - 0.2)),i));
-                threshold(i) = (3*abs(stdbase(i))); %+ abs(base(i));    
-            end
-            
-            % Renormalized Response.Tmax and Early/Late tmax quantifications relative to the mean Tc response, aka
-            % the "base" here
-            Response.Tmax_adjusted = Response.Tmax-base;
-            Results.AdaptBins(1,:) = Results.AdaptBins(1,:) - base;
-            Results.AdaptBins(2,:) = Results.AdaptBins(2,:) - base;
-        else   
-            % If this is a reversal stimulus, then the holding response is
-            % F0 and threshold is as defined above
-            Response.Tmax_adjusted = Response.Tmax;
-        end 
-            % Categorize first 15 seconds of Tmax response
-            above = (temp(1,:) >= threshold);
-            below = (temp(1,:) <= -threshold)*-1;
-            Results.TmaxEarly_Cat = above + below;
-            
-            % Categorize late Tmax response
-            above = (temp(2,:) >= threshold);
-            below = (temp(2,:) <= -threshold)*-1;
-            Results.TmaxLate_Cat = above + below; 
-     else
-         % Stimulus where holding response is higher than
-            % F0, so calculate the threshold from the prestim period
-            for i = 1:size(Temps.prestim,2)
-                base(i)=mean(Response.prestim(find(Temps.prestim(:,i)<=(Stim.holding+.2) & Temps.prestim(:,i) >= (Stim.holding - 0.2)),i));
-                stdbase(i)=std(Response.prestim(find(Temps.prestim(:,i)<=(Stim.holding+.2) & Temps.prestim(:,i) >= (Stim.holding - 0.2)),i));
-                threshold(i) = (3*abs(stdbase(i))); %+ abs(base(i));    
-            end
-            
-            % Renormalized Response.Tmax and Early/Late tmax quantifications relative to the mean Tc response, aka
-            % the "base" here
-            Response.Tmin_adjusted = Response.Tmin-base;
-            Results.AdaptBins(1,:) = Results.AdaptBins(1,:) - base;
-            Results.AdaptBins(2,:) = Results.AdaptBins(2,:) - base;
-            
-            % Categorize first 15 seconds of Tmax response
-            above = (temp(1,:) >= threshold);
-            below = (temp(1,:) <= -threshold)*-1;
-            Results.TminEarly_Cat = above + below;
-            
-            % Categorize late Tmax response
-            above = (temp(2,:) >= threshold);
-            below = (temp(2,:) <= -threshold)*-1;
-            Results.TminLate_Cat = above + below;
-    end   
+
+% If this is a stimulus where holding response is higher than
+% F0, calculate the threshold from the prestim period
+for i = 1:size(Temps.prestim,2)
+    base(i)=mean(Response.prestim(find(Temps.prestim(:,i)<=(Stim.holding+.2) & Temps.prestim(:,i) >= (Stim.holding - 0.2)),i));
+    stdbase(i)=std(Response.prestim(find(Temps.prestim(:,i)<=(Stim.holding+.2) & Temps.prestim(:,i) >= (Stim.holding - 0.2)),i));
+    threshold(i) = (3*abs(stdbase(i))); %+ abs(base(i));
+end
+
+% Renormalized Response.Tmax and Early/Late tmax quantifications relative to the mean Tc response, aka
+% the "base" here
+Response.Tmax_adjusted = Response.Tmax-base;
+Results.AdaptBins(1,:) = Results.AdaptBins(1,:) - base;
+Results.AdaptBins(2,:) = Results.AdaptBins(2,:) - base;
+
+% Categorize first 15 seconds of Tmax response
+above = (temp(1,:) >= threshold);
+below = (temp(1,:) <= -threshold)*-1;
+Results.TmaxEarly_Cat = above + below;
+
+% Categorize last 15 seconds of Tmax response
+above = (temp(2,:) >= threshold);
+below = (temp(2,:) <= -threshold)*-1;
+Results.TmaxLate_Cat = above + below;
+
 
 
 %% Calculate average Response at F0 temperature
