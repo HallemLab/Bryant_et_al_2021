@@ -788,7 +788,7 @@ print(p.pearson.NT)
 dat_AFD_NT_adapt <- dat_AFD %>%
   dplyr::filter(Stimulus == "NT") %>%
   dplyr::ungroup() %>%
-  dplyr::select(Species,Tminfirst5, Tminlast5,F0last5) %>%
+  dplyr::select(Species,Time_220s, Time_340s,Time_460s) %>%
   pivot_longer(cols = !Species, names_to = 'AnalysisBin', values_to = 'Response') %>%
   dplyr::group_by(Species, AnalysisBin)
 
