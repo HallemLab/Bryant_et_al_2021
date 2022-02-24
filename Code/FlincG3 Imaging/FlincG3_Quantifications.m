@@ -53,7 +53,8 @@ set(0,'DefaultFigureVisible','on');
 %% Calculate Temperature at which point trace deviates from F0 response by 3*STD of F0 response for time it takes to change 0.25C
 % The amount of time the absolute value of the trace should be above threshold should reflect 0.25 degree C
 % Calculate based on ramp rate such that:
-% If ramp rate is 0.025C/s, the time it would take to increase 0.25C is 10 seconds, which equals 20 frames.
+% If ramp rate is 0.025C/s, the time it would take to increase 0.25C is 10 seconds. Remember that the imaging data was downsampled to a frame rate
+% of 1 frame/sec.
 
 for i = 1:size(Temps.subset,2)
     base(i)=mean(Response.subset(find(Temps.subset(:,i)<=(Stim.F0+.2) & Temps.subset(:,i) >= (Stim.F0 - 0.2)),i));
@@ -64,7 +65,7 @@ end
 n_expt = size(Response.subset,2);
 disp(strcat('number of recordings: ',num2str(n_expt)));
 
-N = 0.25/time.rampspeed*2; % required number of consecutive numbers following a first one (with a 500 ms frame rate, this is N/2 seconds)
+N = 0.25/time.rampspeed; % required number of consecutive numbers following a first one (with a 500 ms frame rate, this is N/2 seconds)
 
 % RUN THIS FOR EACH INDIVIDUAL EXPERIMENTAL TRACE
 II = arrayfun(@(x)(find(Response.subset(:,x)>=threshold(x) | Response.subset(:,x)<=-threshold(x))), [1:n_expt], 'UniformOutput', false);
@@ -156,13 +157,13 @@ end
 
 %% Measure degree of steady state adaptation, then normalize to Response at Tambient/holding/cultivation
 % For warming temperature ramps, compare first 15 seconds of Stim.max
-% versus final 15. This second locates the temperature bins. See next
+% versus at 1 minute in (15s worth). This second locates the temperature bins. See next
 % section for normalization relative to Tambient.
 for i = 1:n_expt
     temp = (Response.full(find(Temps.full(:,i)>=Stim.max, 1,'first'):find(Temps.full(:,i)>=Stim.max-0.1, 1,'last'),i));
     
-    Results.AdaptBins(1,i) = median(temp(1:30));
-    Results.AdaptBins(2,i) = median(temp(size(temp,1)-30:end));
+    Results.AdaptBins(1,i) = median(temp(1:15));
+    Results.AdaptBins(2,i) = median(temp(61:75));
 end
 
 %% Categorize Tmax responses

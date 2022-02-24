@@ -39,7 +39,7 @@ function [] = TCI_analyzeEctopic
 global pathstr
 global newdir
 
-[name, pathstr] = uigetfile2({'*.mat'},'Select experimental data file','/Users/astrasb/Box Sync/Lab_Hallem/Astra/Writing/Bryant et al 20xx/Data/Calcium Imaging/Ectopic Expression/pFictive Extended');
+[name, pathstr] = uigetfile2({'*.mat'},'Select experimental data file','/Users/astrasb/Box/Lab_Hallem/Astra/Writing/Bryant et al 20xx/Data/Calcium Imaging/Ectopic Expression/pFictive Extended');
 
 filename = {fullfile(pathstr, name)};
 
@@ -65,7 +65,7 @@ else
 end
 
 %% Select .mat file containing baseline data
-[basename, basepathstr] = uigetfile2({'*.mat'},'Select baseline data file','/Users/astrasb/Box Sync/Lab_Hallem/Astra/Writing/Bryant et al 20xx/Data/Calcium Imaging/Ectopic Expression/pFictive Extended/XL115','Multiselect','on');
+[basename, basepathstr] = uigetfile2({'*.mat'},'Select baseline data file','/Users/astrasb/Box/Lab_Hallem/Astra/Writing/Bryant et al 20xx/Data/Calcium Imaging/Ectopic Expression/pFictive Extended/XL115','Multiselect','on');
 basefilename = {fullfile(basepathstr, basename)};
 ctrl_n = regexp(basename,'_data','split');
 ctrl_n = ctrl_n{1};
@@ -118,13 +118,13 @@ end
 
 
 %% Calculate Temperature at which point Experimental trace rises above 3*STD of control trace for at least N seconds
-% Ramp rate is 0.025C/s, so the time it would take to increase 1C is 40 seconds, which equals 80 frames.
+% Ramp rate is 0.025C/s, so the time it would take to increase 1C is 40 seconds.
 avg_baseline = mean(Ctrl.CaResponse.subset,2,'omitnan');
 std_baseline = std(Ctrl.CaResponse.subset,[],2, 'omitnan');
 threshold_line = avg_baseline + (std_baseline *3);
 avg_expt = mean(Exp.CaResponse.subset,2,'omitnan');
 n_expt = size(Exp.CaResponse.subset,2);
-N = 80; % required number of consectuive numbers following a first one (with a 500 ms frame rate, this is N*2 seconds)
+N = 40; % required number of consectuive numbers following a first one (remembering that the calcium signal was subsamples to an effective frame rate of 1frame/sec
 
 % RUN THIS FOR EACH INDIVIDUAL EXPERIMENTAL TRACE
 II = arrayfun(@(x)(find(Exp.CaResponse.subset(:,x)>=threshold_line)), [1:n_expt], 'UniformOutput', false);

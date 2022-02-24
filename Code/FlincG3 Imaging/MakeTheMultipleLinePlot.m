@@ -1,4 +1,5 @@
-function []= MakeTheMultipleLinePlot(Response, avg_Tmp,  err_Tmp, n, vertline, vertline2)
+function []= MakeTheMultipleLinePlot(Response, avg_Tmp,  err_Tmp, n, varargin)
+% varargin = x axis locations to draw vertical lines
 global newdir
 
 
@@ -9,8 +10,9 @@ ax.up = subplot(3,1,[1:2]);
 
 hold on;
 
-xline(vertline,'LineWidth', 2, 'Color', [0.5 0.5 0.5], 'LineStyle', ':');
-xline(vertline2,'LineWidth', 2, 'Color', [0.5 0.5 0.5], 'LineStyle', ':');
+for k = 1:length(varargin)
+    xline(varargin{k},'LineWidth', 2, 'Color', [0.5 0.5 0.5], 'LineStyle', ':');
+end
 plot([1:size(Response,1)],Response, 'LineWidth', 1);
 plot([1:size(Response,1)],median(Response,2, 'omitnan'),'LineWidth', 2, 'Color', 'k');
 
@@ -26,8 +28,9 @@ ax.dwn = subplot(3,1,3);
 shadedErrorBar([1:size(avg_Tmp,1)],avg_Tmp,err_Tmp,'k',0);
 set(gca,'xtickMode', 'auto');
 hold on; 
-xline(vertline,'LineWidth', 2, 'Color', [0.5 0.5 0.5], 'LineStyle', ':');
-xline(vertline2,'LineWidth', 2, 'Color', [0.5 0.5 0.5], 'LineStyle', ':');
+for k = 1:length(varargin)
+    xline(varargin{k},'LineWidth', 2, 'Color', [0.5 0.5 0.5], 'LineStyle', ':');
+end
 hold off;
 ylim([floor(min(avg_Tmp)-max(err_Tmp)),ceil(max(avg_Tmp)+max(err_Tmp))]);
 ylim([10, 41]);
