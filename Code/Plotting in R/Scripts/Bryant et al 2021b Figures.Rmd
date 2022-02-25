@@ -782,7 +782,7 @@ p.pearson.NT <- plot_AFD(dat_AFD_NT,
 print(p.pearson.NT)
 ```
 
-### Response Adaptation
+### Response Across Time
 ```{r, message=FALSE}
 
 dat_AFD_NT_adapt <- dat_AFD %>%
@@ -807,11 +807,11 @@ p.response.NT <- dat_AFD_NT_adapt %>%
                  key_glyph = "rect",
                  alpha = 0.3,
                  show.legend = F,
-                 aes(fill = Species)) +
+                 aes(fill = AnalysisBin)) +
     geom_jitter(size = 1,
                 stroke = .75,
                 width = .2,
-                aes(color = Species, shape = AnalysisBin)) +
+                aes(color = AnalysisBin, shape = AnalysisBin)) +
     facet_grid(. ~ Species) +
     scale_y_continuous(limits = ylim, 
                        expand = expansion(add = 0)) +
@@ -828,11 +828,58 @@ p.response.NT <- dat_AFD_NT_adapt %>%
 print(p.response.NT)
 ```
 
+### Temperatures during timecourse
+```{r, message=FALSE}
+
+dat_AFD_NT_adapt <- dat_AFD %>%
+  dplyr::filter(Stimulus == "NT") %>%
+  dplyr::ungroup() %>%
+  dplyr::select(Species,Temp_220s, Temp_340s,Temp_460s) %>%
+  pivot_longer(cols = !Species, names_to = 'AnalysisBin', values_to = 'Response') %>%
+  dplyr::group_by(Species, AnalysisBin)
+
+ylabel <- "Temperature"
+title <- "Temperatures during cooling ramp"
+ylim <- c(10, 25)
+
+p.temp.NT <- dat_AFD_NT_adapt %>%
+  ggplot(mapping = aes(x = AnalysisBin, y = Response)) + 
+    stat_boxplot(geom = "errorbar", 
+                 width = 0.25,
+                 size = .5) +
+    geom_boxplot(width = 0.5,
+                 outlier.shape = NA,
+                 fatten = 1,
+                 key_glyph = "rect",
+                 alpha = 0.3,
+                 show.legend = F,
+                 aes(fill = Species)) +
+    geom_jitter(size = 1,
+                stroke = .75,
+                width = .2,
+                aes(color = AnalysisBin, shape = AnalysisBin)) +
+    facet_grid(. ~ Species) +
+    scale_y_continuous(limits = ylim, 
+                       expand = expansion(add = 0)) +
+    scale_color_carto_d(palette = "Vivid") +
+    scale_fill_carto_d(palette = "Vivid") +
+    scale_shape_manual(values = c(21:23))  +
+    xlab(xlabel) +
+    ylab(ylabel) +
+    ggtitle(title) +
+    theme_Publication() +
+    theme(aspect.ratio = 2/1) 
+  
+
+print(p.temp.NT)
+```
+
 ### Group and Save AFD Plots
 ```{r}
 ggarrange(
   p.pearson.NT,
   p.response.NT,
+  p.temp.NT,
   ncol = 2,
   nrow = 3
 ) %>%
