@@ -750,104 +750,75 @@ ggarrange(
 ## Cooling Stimuli 
 Responses of *Ss*-AFD and *Ce*-AFD to cooling thermal ramps based on those commonly used for *C. elegans* experiments (Colon-Ramos lab, in particular). In these cases, cooling ramp speeds are generally -0.1C/s.  
 
-### Pearson Correlation
-
-Is the calcium response linearly correlated with changes in temperature. Correlation between calcium repsonses and temperature are analyzed across the following temperature ranges:
-
-* For Tambient = 23, from 13 - 22C (NT)
-
-Statistics are the results of Wilcoxon signed-rank tests. 
-
-```{r, message=FALSE}
-
-dat_AFD_NT <- dat_AFD %>%
-  dplyr::filter(Stimulus == "NT")
-
-ylabel <- "Pearson's R"
-title <- "T vs Ca Correlation, Tambient = 23C, Stim = NT"
-ylim <- c(-1.5, 1.5)
-stat.pearson.NT <- compare_means(AboveThPearsonR ~ Species, 
-                                 data = dat_AFD_NT,
-                                 alternative = "two.sided")
-
-p.pearson.NT <- plot_AFD(dat_AFD_NT, 
-                         dat_AFD_NT$AboveThPearsonR, 
-                         ylim,
-                         xlabel, 
-                         ylabel,
-                         stat.pearson.NT,
-                         1.3,
-                         title)
-
-print(p.pearson.NT)
-```
-
 ### Response Across Time
 ```{r, message=FALSE}
+dat_cooling_file <- c('../Data/AFDCooling_R_Import.xlsx')
 
-dat_AFD_NT_adapt <- dat_AFD %>%
-  dplyr::filter(Stimulus == "NT") %>%
-  dplyr::ungroup() %>%
-  dplyr::select(Species,Time_220s, Time_340s,Time_460s) %>%
-  pivot_longer(cols = !Species, names_to = 'AnalysisBin', values_to = 'Response') %>%
-  dplyr::group_by(Species, AnalysisBin)
-
-ylabel <- "Response Size"
-title <- "Response during cooling ramp"
-ylim <- c(-50, 50)
-
-p.response.NT <- dat_AFD_NT_adapt %>%
-  ggplot(mapping = aes(x = AnalysisBin, y = Response)) + 
-    stat_boxplot(geom = "errorbar", 
-                 width = 0.25,
-                 size = .5) +
-    geom_boxplot(width = 0.5,
-                 outlier.shape = NA,
-                 fatten = 1,
-                 key_glyph = "rect",
-                 alpha = 0.3,
-                 show.legend = F,
-                 aes(fill = AnalysisBin)) +
-    geom_jitter(size = 1,
-                stroke = .75,
-                width = .2,
-                aes(color = AnalysisBin, shape = AnalysisBin)) +
-    facet_grid(. ~ Species) +
-    scale_y_continuous(limits = ylim, 
-                       expand = expansion(add = 0)) +
-    scale_color_carto_d(palette = "Vivid") +
-    scale_fill_carto_d(palette = "Vivid") +
-    scale_shape_manual(values = c(21:23))  +
-    xlab(xlabel) +
-    ylab(ylabel) +
-    ggtitle(title) +
-    theme_Publication() +
-    theme(aspect.ratio = 2/1) 
+if (is_empty(dat_cooling_file)){
+  dat_cooling_file <- file.choose()
+}
+dat_cooling <- read_excel(dat_cooling_file, sheet = 1) %>%
+  dplyr::group_by(Species, Timepoints) %>%
+  dplyr::mutate(AnalysisBin = as.factor(Timepoints))
   
 
-print(p.response.NT)
-```
+ylabel <- "Response"
+title <- "Response during cooling ramp"
+ylim <- c(-25, 25)
+xlim <- c(200, 480)
+xbreaks<-c(220, 340, 460)
 
-### Temperatures during timecourse
-```{r, message=FALSE}
 
-dat_AFD_NT_adapt <- dat_AFD %>%
-  dplyr::filter(Stimulus == "NT") %>%
-  dplyr::ungroup() %>%
-  dplyr::select(Species,Temp_220s, Temp_340s,Temp_460s) %>%
-  pivot_longer(cols = !Species, names_to = 'AnalysisBin', values_to = 'Response') %>%
-  dplyr::group_by(Species, AnalysisBin)
 
-ylabel <- "Temperature"
-title <- "Temperatures during cooling ramp"
-ylim <- c(10, 25)
+ggplotRegression <- function (fit) {
 
-p.temp.NT <- dat_AFD_NT_adapt %>%
-  ggplot(mapping = aes(x = AnalysisBin, y = Response)) + 
-    stat_boxplot(geom = "errorbar", 
-                 width = 0.25,
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+    geom_jitter(size = 1,
+                stroke = .75,
+                width = 5) +
+  stat_smooth(method = "lm", col = "red") +
+  scale_y_continuous(limits = ylim, 
+                       expand = expansion(add = 0)) +
+  scale_x_continuous(limits = xlim, 
+                     breaks = xbreaks) +
+  xlab(xlabel) +
+    ylab(ylabel) +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))+
+  
+    theme_Publication() +
+    theme(aspect.ratio = 2/1) 
+}
+
+temp.Ce <- dplyr::filter(dat_cooling, Species == "Ce") %>%
+  as.data.frame()
+p.regression.Ce <- ggplotRegression(lm(temp.Ce$Response ~ temp.Ce$Timepoints, data = temp.Ce))
+
+temp.Ss <- dplyr::filter(dat_cooling, Species == "Ss") %>%
+  as.data.frame()
+
+p.regression.Ss <- ggplotRegression(lm(temp.Ss$Response ~ temp.Ss$Timepoints, data = temp.Ss))
+
+
+linear_regressions <- tibble::tibble(
+  bestfit_slope = c(-0.02111, -0.04117),
+  bestfit_y_intercept = c(3.586, 6.596),
+  bestfit_x_intercept = c(169.8, 160.2),
+  Species = as_factor(c('Ce', 'Ss'))
+)
+
+
+
+p.response.NT <- dat_cooling %>%
+  ggplot(mapping = aes(x = Timepoints, y = Response, group = AnalysisBin)) + 
+  stat_boxplot(geom = "errorbar", 
+                 width = 40,
                  size = .5) +
-    geom_boxplot(width = 0.5,
+    geom_boxplot(width = 40,
                  outlier.shape = NA,
                  fatten = 1,
                  key_glyph = "rect",
@@ -856,11 +827,14 @@ p.temp.NT <- dat_AFD_NT_adapt %>%
                  aes(fill = Species)) +
     geom_jitter(size = 1,
                 stroke = .75,
-                width = .2,
-                aes(color = AnalysisBin, shape = AnalysisBin)) +
+                width = 10, 
+                aes(color = AnalysisBin)) +
+
     facet_grid(. ~ Species) +
     scale_y_continuous(limits = ylim, 
                        expand = expansion(add = 0)) +
+  scale_x_continuous(limits = xlim, 
+                     breaks = xbreaks) +
     scale_color_carto_d(palette = "Vivid") +
     scale_fill_carto_d(palette = "Vivid") +
     scale_shape_manual(values = c(21:23))  +
@@ -869,6 +843,49 @@ p.temp.NT <- dat_AFD_NT_adapt %>%
     ggtitle(title) +
     theme_Publication() +
     theme(aspect.ratio = 2/1) 
+    
+
+print(p.response.NT)
+
+   
+```
+
+### Temperatures during timecourse
+```{r, message=FALSE}
+
+ylabel <- "Temperature"
+title <- "Temperatures during cooling ramp"
+ylim <- c(10, 25)
+
+p.temp.NT <-  dat_cooling %>%
+  ggplot(mapping = aes(x = Timepoints, y = Temperature, group = AnalysisBin)) + 
+  stat_boxplot(geom = "errorbar", 
+                 width = 40,
+                 size = .5) +
+    geom_boxplot(width = 40,
+                 outlier.shape = NA,
+                 fatten = 1,
+                 key_glyph = "rect",
+                 alpha = 0.3,
+                 show.legend = F,
+                 aes(fill = Species)) +
+    geom_jitter(size = 1,
+                stroke = .75,
+                width = 10, 
+                aes(color = AnalysisBin)) +
+    facet_grid(. ~ Species) +
+    scale_y_continuous(limits = ylim, 
+                       expand = expansion(add = 0)) +
+  scale_x_continuous(limits = xlim, 
+                     breaks = xbreaks) +
+    scale_color_carto_d(palette = "Vivid") +
+    scale_fill_carto_d(palette = "Vivid") +
+    scale_shape_manual(values = c(21:23))  +
+    xlab(xlabel) +
+    ylab(ylabel) +
+    ggtitle(title) +
+    theme_Publication() +
+    theme(aspect.ratio = 2/1)  
   
 
 print(p.temp.NT)
@@ -877,7 +894,8 @@ print(p.temp.NT)
 ### Group and Save AFD Plots
 ```{r}
 ggarrange(
-  p.pearson.NT,
+  p.regression.Ce,
+  p.regression.Ss,
   p.response.NT,
   p.temp.NT,
   ncol = 2,
