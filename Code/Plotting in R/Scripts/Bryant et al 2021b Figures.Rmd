@@ -1,5 +1,5 @@
 ---
-title: "Plots related to Bryant *et al* 2021b"
+title: "Plots related to Bryant *et al* 20xx"
 author: "Astra S. Bryant, PhD"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output:
@@ -16,7 +16,7 @@ output:
 This purpose of this document is to generate plots for the mansucript titled 
 "The neural basis of temperature-driven host-seeking in the human threadworm *Strongyloides stercoralis*." 
 
-The data analyzed here belong to two different classes of experiments: thermotaxis tracking assays, and thermosensory calcium imaging experiments. 
+The data analyzed here belong to two different classes of experiments: thermotaxis tracking assays, and thermosensory neuronal imaging experiments. 
 
 ## Setup
 ```{r setup, include=FALSE}
@@ -362,13 +362,13 @@ Thermosensory response properties of *C. elegans* AFD (strain = IK890), and *S. 
 The data reflect the responses of *C. elegans* AFD and *S. stercoralis* AFD to the following thermal stimuli:  
 
 + Warming ramps (Tambient = 23$^\circ$C):  
-  - Pseudo-fictive PT 20-34$^\circ$C ramp
-  - Pseudo-fictive PTe 20-40$^\circ$C ramp
+  - 20-34$^\circ$C ramp (a.k.a "pFPT")
+  - 20-40$^\circ$C ramp (a.k.a "pFPTe")
 + Warming ramps (Tambient = 15$^\circ$C): 
-  - Pseudo-fictive PT15 12-26$^\circ$C ramp
-  - Pseudo-fictive PT15e 12-32$^\circ$C ramp
+  - 12-26$^\circ$C ramp (a.k.a "pFPT")
+  - 12-32$^\circ$C ramp (a.k.a "pFPTe")
 + Cooling ramps (Tambient = 23$^\circ$C): 
-  - NT 22-13$^\circ$C ramp
+  - 22-13$^\circ$C ramp (a.k.a "NT")
 
 ## Data Inputs
 These data were preprocessed and calculated by TCI Matlab code.  
@@ -504,7 +504,7 @@ print(p.thresh.23)
 #### Tambient = 15C  
 
 ``` {r, message=FALSE}
-xlabel <- "Species"
+xlabel <- "Ambient Temperature"
 ylabel <- " Temperature (C)"
 title <- "Threshold Temperature, Tambient = 15C"
 ylim <- c(10, 40)
@@ -557,7 +557,7 @@ print(p.pearson.23)
 ylabel <- "Pearson's R"
 title <- "T vs Ca Correlation, Tambient = 15C"
 ylim <- c(-1.5, 1.5)
-xlabel <- "Cultivation Temp"
+xlabel <- "Ambient Temperature"
 
 p.pearson.allTc <- plot_AFD_Speciesfacet(dat_AFD_allTambient, 
                                          dat_AFD_allTambient$AboveThPearsonR, 
@@ -583,6 +583,7 @@ Statistics are the results of Wilcoxon signed-rank tests.
 ```{r, message=FALSE}
 
 ylabel <- "Spearman's R"
+xlabel <- "Species"
 title <- "T vs Ca Correlation, Tambient = 23C"
 ylim <- c(-1.5, 1.5)
 stat.spearman.23 <- compare_means(AtThSpearmanR ~ Species, 
@@ -608,7 +609,7 @@ print(p.spearman.23)
 ylabel <- "Spearman's R"
 title <- "T vs Ca Correlation, Tambient = 15C"
 ylim <- c(-1.5, 1.5)
-xlabel <- "Cultivation Temp"
+xlabel <- "Ambient Temperature"
 
 p.spearman.allTc <- plot_AFD_Speciesfacet(dat_AFD_allTambient, 
                                           dat_AFD_allTambient$AtThSpearmanR, 
@@ -628,11 +629,12 @@ Plots showing the temperature that corresponds to the maximum and minimal calciu
 Statistics are the results of Wilcoxon signed-rank tests. 
 
 #### Max Response  
-Only use values from traces from the pF PT stimulus, not the extended versions.  
+Only use values from traces from the pFPT stimulus, not the extended versions.  
 
 ##### Tambient = 23C
 ```{r}
 ylabel <- "Temperature (C)"
+xlabel <- "Species"
 title <- "Temp @ Max Response, Tambient = 23C"
 ylim <- c(15, 40)
 
@@ -657,6 +659,7 @@ print(p.max.23)
 ##### Tambient = 15C
 ```{r}
 ylabel <- "Temperature (C)"
+xlabel <- "Species"
 title <- "Temp @ Max Response, Tambient = 15C"
 ylim <- c(10, 35)
 
@@ -684,6 +687,7 @@ print(p.max.15)
 ##### Tambient = 23C
 ```{r}
 ylabel <- "Temperature (C)"
+xlabel <- "Species"
 title <- "Temp @ Min Response, Tambient = 23C"
 ylim <- c(15, 40)
 
@@ -706,6 +710,7 @@ print(p.min.23)
 ##### Tambient = 15C
 ```{r}
 ylabel <- "Temperature (C)"
+xlabel <- "Species"
 title <- "Temp @ Min Response, Tambient = 15C"
 ylim <- c(10, 35)
 
@@ -908,18 +913,18 @@ ggarrange(
          path = "../Outputs/")
 ```
 
-# Reversal Behaviors  
-Worm tracking and calcium imaging data for reversal behaviors exhibited by *S. stercoralis* iL3s.   
+# U-turn Behaviors  
+Worm tracking and calcium imaging data for U-turn behaviors exhibited by *S. stercoralis* iL3s.   
 
 ## Data Inputs
 Calcium imaging data were preprocessed and calculated by TCI Matlab code. 
 ```{r message=FALSE}
-dat_reversal_file <- c('../Data/Reversal_R_Import.xlsx')
+dat_Uturn_file <- c('../Data/Uturn_R_Import.xlsx')
 
-if (is_empty(dat_reversal_file)){
-  dat_reversal_file <- file.choose()
+if (is_empty(dat_Uturn_file)){
+  dat_Uturn_file <- file.choose()
 }
-dat_reversal <- read_excel(dat_reversal_file, sheet = 1) %>%
+dat_Uturn <- read_excel(dat_Uturn_file, sheet = 1) %>%
   group_by(Gradient,Tc) %>%
   dplyr::mutate(Gradient = factor(Gradient, levels = c("High", "Low"))) %>%
   dplyr::mutate(Tc = factor(Tc, levels = c(23, 15))) 
@@ -928,7 +933,7 @@ dat_reversal <- read_excel(dat_reversal_file, sheet = 1) %>%
 
 ## Plot Templates
 ```{r}
-plot_reversal_Range <-  function(dat, y, ylim, xlabel, ylabel, title = NULL){
+plot_Uturn_Range <-  function(dat, y, ylim, xlabel, ylabel, title = NULL){
   ggplot(data = dat, mapping = aes(x = Tc, y = y)) + 
     stat_boxplot(geom = "errorbar", 
                  width = 0.25,
@@ -959,30 +964,30 @@ plot_reversal_Range <-  function(dat, y, ylim, xlabel, ylabel, title = NULL){
 
 ```
 
-## Percent Reversals  
-This plot shows the percent of positive thermotaxing worms that engage in reversal behaviors, for each condition.  
+## Percent Uturns  
+This plot shows the percent of positive thermotaxing worms that engage in Uturn behaviors, for each condition.  
 
 ```{r}
-p.reversals.PT <- plot_reversal_Range(dat_reversal, 
-                                      dat_reversal$Percent_PT_Reversing, 
+p.Uturns.PT <- plot_Uturn_Range(dat_Uturn, 
+                                      dat_Uturn$Percent_PT_Reversing, 
                                       ylim = c(-5, 105),
                                       xlabel = "Cultivation Temperature", 
                                       ylabel = "% Reversing", 
-                                      title = "% Positive Thermotaxis w/ Reversal")
+                                      title = "% Positive Thermotaxis w/ Uturn")
 
-print(p.reversals.PT)
+print(p.Uturns.PT)
 ```
 
-This plot shows the percent of all worms that engage in reversal behaviors, for each condition.  
+This plot shows the percent of all worms that engage in Uturn behaviors, for each condition.  
 ```{r}
-p.reversals.All <- plot_reversal_Range(dat_reversal, 
-                                       dat_reversal$Percent_All_Reversing, 
+p.Uturns.All <- plot_Uturn_Range(dat_Uturn, 
+                                       dat_Uturn$Percent_All_Reversing, 
                                        ylim = c(-5, 105),
                                        xlabel = "Cultivation Temperature", 
                                        ylabel = "% Reversing", 
-                                       title = "% All Worms w/ Reversal")
+                                       title = "% All Worms w/ Uturn")
 
-print(p.reversals.All)
+print(p.Uturns.All)
 ```
 
 # AFD Adaptation 
@@ -1000,7 +1005,7 @@ if (is_empty(dat_adapt_file)){
 }
 dat_AFD_adaptation <- read_excel(dat_adapt_file, sheet = 1) %>%
   dplyr::mutate(Species = as_factor(Species)) %>%
-  dplyr::mutate(Stimulus = factor(Stimulus, levels = c("Reversal", "pFPT", "pFPTe", "NT", "FlincG3"))) %>%
+  dplyr::mutate(Stimulus = factor(Stimulus, levels = c("Uturn", "pFPT", "pFPTe", "NT", "FlincG3"))) %>%
   dplyr::mutate(Tambient = factor(Tambient, levels = c(23, 15))) %>%
   dplyr::mutate(UID = as_factor(UID)) %>%
   pivot_longer(cols = c(AdaptWindowEarly, AdaptWindowLate),
@@ -1095,14 +1100,14 @@ print(p.bar.adapt.late)
 ## Group and Save Plots
 ```{r}
 ggarrange(
-  p.reversals.PT,
-  p.reversals.All,
+  p.Uturns.PT,
+  p.Uturns.All,
   p.bar.adapt.late,
   p.Tmax.adapt,
   ncol = 2,
   nrow = 4
 ) %>%
-  ggsave(filename ="ReversalBehaviorAndAFDAdaptation.pdf",
+  ggsave(filename ="UturnBehaviorAndAFDAdaptation.pdf",
          device = cairo_pdf,
          width = 7,
          height = 8.4,
