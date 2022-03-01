@@ -1,6 +1,4 @@
-# Thermosensory Calcium Imaging Matlab Code
- This repository subfolder contains Matlab code related to preprocessing and quantification of data collected during thermosensory calcium imaging experiments. 
+# Thermosensory FlincG3 Imaging Matlab Code
+ This repository subfolder contains Matlab code related to preprocessing and quantification of data collected during thermosensory cGMP imaging experiments using the FlincG3 sensor. 
  
- For analysis of experiments in *C. elegans* AFD and *S. stercoralis* AFD, the top-level Matlab script is: TCI_Primary.m 
- 
- For analysis of rGC ecoptic expression experiments in *C. elegans* ASE, the users should preprocess imaging data and temperature recordins using TCI_Preprocess.m before conducting quantification and plotting using the TCI_analyzeEctopic.m file. 
+ For analysis of experiments in *S. stercoralis* AFD, the top-level Matlab script is: FlincG3_Primary.m

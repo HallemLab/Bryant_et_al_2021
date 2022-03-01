@@ -1,6 +1,6 @@
 function [Temps, Response] = strFlincG3_Primary ()
-%% strFlincG3_Primary processes strFlincG3 responses to a variety of thermosensory stimuli
-%   [] = strFlincG3_Primary()
+%% FlincG3_Primary processes FlincG3 responses to thermosensory stimuli
+%   [] = FlincG3_Primary()
 %   This is the top-level script for analysis of temperature-driven cGMP imaging responses. 
 %
 

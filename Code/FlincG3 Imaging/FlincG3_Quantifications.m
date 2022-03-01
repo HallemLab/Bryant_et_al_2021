@@ -1,17 +1,9 @@
 function [Temps, Response, Results] = FlincG3_Quantifications (Temps,Response, Stim, time,n)
 %% FlincG3_Quantifications
-%   Quantifies YC3.6 responses to thermal stimuli. Calculations include:
+%   Quantifies FlincG3 responses to thermal stimuli. Calculations include:
 %   T*, temp eliciting maximal response, mean FlincG3 response at specified temp
 %   bins, Pearson and Spearman Correlation coefficients
 %
-%   Version 1.2
-%   Version Date: 9-6-20
-%
-%% Revision History
-%   04-01-20    Forked from older version by ASB
-%   04-02-20    Renamed a bunch of variables to make more accessible.
-%   09-08-20    Changed procedure for detecting threshold such that if
-%               calcium trace does not cross threshold, NaN is returned.
 
 global assaytype
 
