@@ -3,15 +3,7 @@ function [Temps, CaResponse, Results] = TCI_Quantifications (Temps,CaResponse, S
 %   Quantifies YC3.6 responses to thermal stimuli. Calculations include:
 %   T*, temp eliciting maximal response, mean Ca response at specified temp
 %   bins, Pearson and Spearman Correlation coefficients
-%
-%   Version 1.2
-%   Version Date: 9-6-20
-%
-%% Revision History
-%   04-01-20    Forked from older version by ASB
-%   04-02-20    Renamed a bunch of variables to make more accessible.
-%   09-08-20    Changed procedure for detecting threshold such that if
-%               calcium trace does not cross threshold, NaN is returned.
+
 
 global assaytype
 
@@ -215,12 +207,14 @@ for i = 1:n_expt
         Results.AdaptBins(1,i) = median(temp(1:15));
         Results.AdaptBins(2,i) = median(temp(61:75));
         
-        % For cooling ramps, compare 3 time bins, spaced 2 mins apart
+        % For cooling ramps, compare 4 time bins, spaced 1 min apart
+       
         Results.AdaptBins(3,i) = median(CaResponse.full(220:230,i));
         Results.AdaptBins(4,i) = median(CaResponse.full(340:350,i));
         Results.AdaptBins(5,i) = median(CaResponse.full(460:470,i));
         
         % And get the temps
+        
         Results.AdaptBins(6,i) = median(Temps.full(220:230,i));
         Results.AdaptBins(7,i) = median(Temps.full(340:350,i));
         Results.AdaptBins(8,i) = median(Temps.full(460:470,i));
