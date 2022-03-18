@@ -1,7 +1,7 @@
 function [] = FlincG3_Plots(Temps, Response, Stim, UIDs, n, numfiles, Results, time)
 %% FlincG3_Plots
 %   Generates and saves plots of FlincG3 Thermal Imaging
-%   FlincG3_Plots(Temps, Response, name, n, numfiles)
+%   FlincG3_Plots(Temps, Response, Stim, UIDs, n, numfiles, Results, time)
 
 global plotflag
 global assaytype

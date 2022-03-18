@@ -4,13 +4,6 @@ function [rsq, Correlation] = FlincG3_ResponseFitting (Temps,Response, degree,na
 %   Input is a structure array with fields named Temps and Response
 %   [rsq, Correlation] = FlincG3_ResponseFitting (Temps, Response, degree, name)
 %
-%   Version number 1.0
-%   Version date: 4-1-20
-%
-%% Revision History
-%   10-16-19 Created by ASB
-%   04-01-20    Name revised by ASB
-%
 
 %% Code
 global newdir
