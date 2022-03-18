@@ -1,4 +1,4 @@
-%% Script for analysizing reversal behavior
+%% Script for analysizing U-turn behaviors
 % Specifically includes some code for determining the time varying thermal
 % ramp.
 %
