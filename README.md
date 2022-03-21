@@ -27,12 +27,10 @@ Includes data files containing raw data as well as processed/quantified data. Fo
 - **Worm Tracking:** contains .xlsx files with raw data for worm tracking experiments (including: Ss-tax-4, Sr-gcy-23.2p::strHisCl1, reversal behaviors, and example positive thermotaxis). See internal readme file for more information.
 
 ## Supplemental Data Files
-Contains supplemental data files.
+Contains supplemental data files related to the BioRxiv version of the manuscript.
 
 - **Supplemental Data File 1:** This file includes the results of statistical tests and exact p values, as well as the data used for statistical analyses in the BioRxiv version.
 - **Supplemental Data File 2:** This file includes all primers, plasmids, worm strains, and thermal ramps used in the BioRxiv version.
-- **Dataset S1:** This Excel file includes the *S. stercoralis* and *S. ratti* genes identified during phylogenetic analysis of the parasite rGC family, plus *C. elegans* rGCs used during TBLASTN searches. Notes related to manual curation of parasite rGC gene models are included, as are the updated predicted amino acid sequences and new gene models in gff3 format.
-- **Dataset S2:** This Excel file includes the results of statistical tests and exact p values, as well as the data used for statistical analyses for the CB revision.
 
 
 ## License
