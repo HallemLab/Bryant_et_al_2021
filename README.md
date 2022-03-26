@@ -1,9 +1,11 @@
 # Bryant et al 2021|2022 Code/Data Repository
-Data, code, and hardware specs associated with the Bryant *et al* manuscript, "The neural basis of heat seeking in a human-infective parasitic worm" Includes files related to the version in BioRxiv, as well as submissions to peer-reviewed journals. 
+Data, code, and hardware specs associated with the Bryant *et al* manuscript, "The neural basis of heat seeking in a human-infective parasitic worm." Includes files related to the version in BioRxiv, as well as submissions to peer-reviewed journals. 
 [The BioRxiv version can be accessed at this link.](https://www.biorxiv.org/content/10.1101/2021.06.23.449647v1)
 
+Code freezes related to specific manuscript versions are saved as separate Releases, and archived using Zenodo.
+
 ## Code
-Custom code for data acquisition and analysis. Folder includes the following subfolders:   
+Custom code for data acquisition and analysis.  Folder includes the following subfolders:   
 
 - **Calcium Imaging Preprocessing and Analysis:** Used to align raw fluorescence values and temperature reads, plot traces, and quantify specific parameters related to calcium imaging.
 - **Plotting in R:** Code written in R that generates various plots shown in the manuscript.
