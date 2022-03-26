@@ -1,5 +1,5 @@
 ---
-title: "Plots related to The Neural Basis of Heat Seeking in a Human-Infective Parasitic Worm"
+title: "Plots related to Bryant et al 2022 (Current Biology)"
 author: "Astra S. Bryant, PhD"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output:
