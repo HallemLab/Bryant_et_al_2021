@@ -1,9 +1,10 @@
-LOCUS       SRAE_0000025200         7276 bp    DNA        linear       03-DEC-2021
+LOCUS       SRAE_0000025200_        7276 bp    DNA        linear       01-JUN-2023
 DEFINITION  .
 ACCESSION   
 VERSION     
 SOURCE      .
   ORGANISM  .
+COMMENT     
 COMMENT     
 COMMENT     ApEinfo:methylated:1
 FEATURES             Location/Qualifiers
@@ -37,22 +38,6 @@ FEATURES             Location/Qualifiers
                      /ApEinfo_label="Exon 4"
                      /ApEinfo_fwdcolor="cyan"
                      /ApEinfo_revcolor="green"
-                     /ApEinfo_graphicformat="arrow_data {{0 0.5 0 1 2 0 0 -1 0
-                     -0.5} {} 0} width 5 offset 0"
-     exon            1963..3240
-                     /locus_tag="ORF"
-                     /label="ORF"
-                     /ApEinfo_label="ORF"
-                     /ApEinfo_fwdcolor="#c83a90"
-                     /ApEinfo_revcolor="#c83a90"
-                     /ApEinfo_graphicformat="arrow_data {{0 0.5 0 1 2 0 0 -1 0
-                     -0.5} {} 0} width 5 offset 0"
-     exon            3471..5339
-                     /locus_tag="ORF(1)"
-                     /label="ORF(1)"
-                     /ApEinfo_label="ORF"
-                     /ApEinfo_fwdcolor="#c83a90"
-                     /ApEinfo_revcolor="#c83a90"
                      /ApEinfo_graphicformat="arrow_data {{0 0.5 0 1 2 0 0 -1 0
                      -0.5} {} 0} width 5 offset 0"
 ORIGIN
